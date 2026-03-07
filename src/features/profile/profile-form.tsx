@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { UserProfile } from "@/types/user";
 import { useToast } from "@/hooks/use-toast";
+import { useUpdateProfileMutation } from "@/lib/store/api";
 
 export function ProfileForm({ profile }: { profile: UserProfile }) {
   const [form, setForm] = useState({
@@ -15,35 +16,44 @@ export function ProfileForm({ profile }: { profile: UserProfile }) {
   });
   const [avatarPreview, setAvatarPreview] = useState(profile.avatar ?? "");
   const { push } = useToast();
+  const [updateProfile, { isLoading }] = useUpdateProfileMutation();
 
   const updateField = (field: keyof typeof form) =>
     (event: ChangeEvent<HTMLInputElement>) => {
       setForm((prev) => ({ ...prev, [field]: event.target.value }));
     };
 
+  const resolveErrorMessage = (error: unknown) => {
+    if (typeof error === "object" && error && "data" in error) {
+      const data = (error as { data?: { error?: string } }).data;
+      if (data && typeof data === "object" && "error" in data) {
+        const message = (data as { error?: string }).error;
+        if (typeof message === "string") {
+          return message;
+        }
+      }
+    }
+    if (error instanceof Error) {
+      return error.message;
+    }
+    return "Try again.";
+  };
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    const res = await fetch("/api/users/me", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-
-    if (!res.ok) {
-      push({ title: "Update failed", description: "Try again." });
-      return;
-    }
-    const data = await res.json().catch(() => null);
-    if (data?.success && data.data) {
+    try {
+      const updatedProfile = await updateProfile(form).unwrap();
       setForm({
-        name: data.data.name ?? form.name,
-        phone: data.data.phone ?? "",
-        address: data.data.address ?? "",
-        avatar: data.data.avatar ?? "",
+        name: updatedProfile.name ?? form.name,
+        phone: updatedProfile.phone ?? "",
+        address: updatedProfile.address ?? "",
+        avatar: updatedProfile.avatar ?? "",
       });
-      setAvatarPreview(data.data.avatar ?? "");
+      setAvatarPreview(updatedProfile.avatar ?? "");
+      push({ title: "Profile updated" });
+    } catch (error) {
+      push({ title: "Update failed", description: resolveErrorMessage(error) });
     }
-    push({ title: "Profile updated" });
   };
 
   useEffect(() => {
@@ -140,8 +150,8 @@ export function ProfileForm({ profile }: { profile: UserProfile }) {
           />
         </label>
       </div>
-      <Button type="submit" className="w-full md:w-auto">
-        Save changes
+      <Button type="submit" className="w-full md:w-auto" disabled={isLoading}>
+        {isLoading ? "Saving..." : "Save changes"}
       </Button>
     </form>
   );

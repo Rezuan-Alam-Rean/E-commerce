@@ -1,77 +1,109 @@
-import { create } from "zustand";
-import type { CartState } from "@/types/cart";
-import { apiRequest } from "@/services/api-client";
+"use client";
 
-type CartStore = {
-  cart: CartState | null;
-  loading: boolean;
-  load: () => Promise<void>;
-  addItem: (productId: string, quantity: number) => Promise<void>;
-  updateItem: (productId: string, quantity: number) => Promise<void>;
-  removeItem: (productId: string) => Promise<void>;
-  updateDelivery: (deliveryOption: string) => Promise<void>;
-  reset: () => void;
-};
+import { useCallback } from "react";
+import type { DeliveryOption } from "@/lib/constants";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { api } from "@/lib/store/api";
+import { cartActions } from "@/lib/store/slices/cart-slice";
 
-export const useCartStore = create<CartStore>((set) => ({
-  cart: null,
-  loading: false,
-  load: async () => {
-    set({ loading: true });
+export function useCartStore() {
+  const dispatch = useAppDispatch();
+  const { cart, loading } = useAppSelector((state) => state.cart);
+
+  const load = useCallback(async () => {
+    const action = dispatch(
+      api.endpoints.getCart.initiate(undefined, {
+        subscribe: false,
+        forceRefetch: true,
+      }),
+    );
     try {
-      const cart = await apiRequest<CartState>("/api/cart");
-      set({ cart, loading: false });
-    } catch {
-      set({ cart: null, loading: false });
+      await action.unwrap();
+    } finally {
+      action.unsubscribe();
     }
-  },
-  addItem: async (productId, quantity) => {
-    set({ loading: true });
-    try {
-      const cart = await apiRequest<CartState>("/api/cart", {
-        method: "POST",
-        body: JSON.stringify({ productId, quantity }),
-      });
-      set({ cart, loading: false });
-    } catch {
-      set({ loading: false });
-    }
-  },
-  updateItem: async (productId, quantity) => {
-    set({ loading: true });
-    try {
-      const cart = await apiRequest<CartState>("/api/cart", {
-        method: "PATCH",
-        body: JSON.stringify({ productId, quantity }),
-      });
-      set({ cart, loading: false });
-    } catch {
-      set({ loading: false });
-    }
-  },
-  removeItem: async (productId) => {
-    set({ loading: true });
-    try {
-      const cart = await apiRequest<CartState>("/api/cart", {
-        method: "DELETE",
-        body: JSON.stringify({ productId }),
-      });
-      set({ cart, loading: false });
-    } catch {
-      set({ loading: false });
-    }
-  },
-  updateDelivery: async (deliveryOption) => {
-    set({ loading: true });
-    try {
-      const cart = await apiRequest<CartState>("/api/cart", {
-        method: "PATCH",
-        body: JSON.stringify({ deliveryOption }),
-      });
-      set({ cart, loading: false });
-    } catch {
-      set({ loading: false });
-    }
-  },
-  reset: () => set({ cart: null, loading: false }),
-}));
+  }, [dispatch]);
+
+  const addItem = useCallback(
+    async (productId: string, quantity: number) => {
+      const action = dispatch(
+        api.endpoints.addCartItem.initiate(
+          { productId, quantity },
+          { subscribe: false },
+        ),
+      );
+      try {
+        await action.unwrap();
+      } finally {
+        action.unsubscribe();
+      }
+    },
+    [dispatch],
+  );
+
+  const updateItem = useCallback(
+    async (productId: string, quantity: number) => {
+      const action = dispatch(
+        api.endpoints.updateCartItem.initiate(
+          { productId, quantity },
+          { subscribe: false },
+        ),
+      );
+      try {
+        await action.unwrap();
+      } finally {
+        action.unsubscribe();
+      }
+    },
+    [dispatch],
+  );
+
+  const removeItem = useCallback(
+    async (productId: string) => {
+      const action = dispatch(
+        api.endpoints.removeCartItem.initiate(
+          { productId },
+          { subscribe: false },
+        ),
+      );
+      try {
+        await action.unwrap();
+      } finally {
+        action.unsubscribe();
+      }
+    },
+    [dispatch],
+  );
+
+  const updateDelivery = useCallback(
+    async (deliveryOption: DeliveryOption) => {
+      const action = dispatch(
+        api.endpoints.updateCartDelivery.initiate(
+          { deliveryOption },
+          { subscribe: false },
+        ),
+      );
+      try {
+        await action.unwrap();
+      } finally {
+        action.unsubscribe();
+      }
+    },
+    [dispatch],
+  );
+
+  const reset = useCallback(() => {
+    dispatch(cartActions.resetCart());
+  }, [dispatch]);
+
+  return {
+    cart,
+    loading,
+    load,
+    addItem,
+    updateItem,
+    removeItem,
+    updateDelivery,
+    reset,
+  };
+}

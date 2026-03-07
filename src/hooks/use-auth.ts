@@ -1,41 +1,46 @@
 "use client";
 
-import { create } from "zustand";
-import type { UserProfile } from "@/types/user";
+import { useCallback } from "react";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { api } from "@/lib/store/api";
+import { authActions } from "@/lib/store/slices/auth-slice";
 
-type AuthState = {
-  user: UserProfile | null;
-  loading: boolean;
-  load: () => Promise<void>;
-  logout: () => Promise<void>;
-};
+export function useAuth() {
+  const dispatch = useAppDispatch();
+  const { user, loading } = useAppSelector((state) => state.auth);
 
-export const useAuth = create<AuthState>((set) => ({
-  user: null,
-  loading: false,
-  load: async () => {
-    set({ loading: true });
+  const load = useCallback(async () => {
+    const action = dispatch(
+      api.endpoints.getProfile.initiate(undefined, {
+        subscribe: false,
+        forceRefetch: true,
+      }),
+    );
     try {
-      const res = await fetch("/api/auth/profile", { credentials: "include" });
-      if (!res.ok) {
-        set({ user: null, loading: false });
-        return;
-      }
-      const data = await res.json();
-      if (!data.success) {
-        set({ user: null, loading: false });
-        return;
-      }
-      set({ user: data.data, loading: false });
-    } catch {
-      set({ user: null, loading: false });
-    }
-  },
-  logout: async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
+      await action.unwrap();
     } finally {
-      set({ user: null });
+      action.unsubscribe();
     }
-  },
-}));
+  }, [dispatch]);
+
+  const logout = useCallback(async () => {
+    const action = dispatch(
+      api.endpoints.logout.initiate(undefined, {
+        subscribe: false,
+      }),
+    );
+    try {
+      await action.unwrap();
+    } finally {
+      action.unsubscribe();
+    }
+    dispatch(authActions.resetAuth());
+  }, [dispatch]);
+
+  return {
+    user,
+    loading,
+    load,
+    logout,
+  };
+}

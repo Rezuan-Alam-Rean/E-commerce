@@ -7,11 +7,13 @@ import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { useCartStore } from "@/features/cart/cart.store";
 import { useToast } from "@/hooks/use-toast";
+import { useCreateOrderMutation } from "@/lib/store/api";
 import { formatCurrency } from "@/utils/format";
 
 export function CheckoutForm() {
   const router = useRouter();
   const { cart, load } = useCartStore();
+  const [createOrder, { isLoading: placingOrder }] = useCreateOrderMutation();
   const { push } = useToast();
   const [form, setForm] = useState({
     shippingName: "",
@@ -47,20 +49,19 @@ export function CheckoutForm() {
       push({ title: "Cart empty", description: "Add items before checkout." });
       return;
     }
-    const res = await fetch("/api/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, deliveryOption }),
-    });
-
-    if (!res.ok) {
-      const data = await res.json().catch(() => null);
-      push({ title: "Checkout failed", description: data?.error ?? "Please try again." });
-      return;
+    try {
+      await createOrder({ ...form, deliveryOption }).unwrap();
+      push({ title: "Order placed", description: "Cash on delivery confirmed." });
+      router.push("/dashboard");
+    } catch (error) {
+      const message =
+        typeof error === "object" && error && "data" in error
+          ? ((error as { data?: { error?: string } }).data?.error ?? "Please try again.")
+          : error instanceof Error
+            ? error.message
+            : "Please try again.";
+      push({ title: "Checkout failed", description: message });
     }
-
-    push({ title: "Order placed", description: "Cash on delivery confirmed." });
-    router.push("/dashboard");
   };
 
   return (
@@ -142,8 +143,8 @@ export function CheckoutForm() {
           </label>
         </div>
       </div>
-      <Button type="submit" disabled={!cart || cart.items.length === 0}>
-        Place order
+      <Button type="submit" disabled={!cart || cart.items.length === 0 || placingOrder}>
+        {placingOrder ? "Placing order" : "Place order"}
       </Button>
       {cart ? (
         <div className="rounded-[var(--radius-md)] border border-border bg-surface-strong p-4">

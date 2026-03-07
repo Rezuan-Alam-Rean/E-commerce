@@ -11,6 +11,12 @@ import type { OrderSummary } from "@/types/order";
 import { useToast } from "@/hooks/use-toast";
 import { formatCurrency } from "@/utils/format";
 import { ORDER_STATUS, type OrderStatus } from "@/lib/constants";
+import {
+  useLazyGetOrdersQuery,
+  useUpdateOrderMutation,
+  useLazyGetProductQuery,
+  useUpdateProductMutation,
+} from "@/lib/store/api";
 
 const PAGE_SIZE = 8;
 
@@ -21,6 +27,22 @@ type ConfirmState = {
   confirmText: string;
   cancelText: string;
   action: null | (() => Promise<void> | void);
+};
+
+const resolveErrorMessage = (error: unknown) => {
+  if (typeof error === "object" && error && "data" in error) {
+    const data = (error as { data?: { error?: string } }).data;
+    if (data && typeof data === "object" && "error" in data) {
+      const message = (data as { error?: string }).error;
+      if (typeof message === "string") {
+        return message;
+      }
+    }
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return "Unable to process request.";
 };
 
 export function AdminOrders() {
@@ -40,32 +62,31 @@ export function AdminOrders() {
     action: null,
   });
   const [confirmBusy, setConfirmBusy] = useState(false);
+  const [fetchOrdersQuery, { isFetching: ordersFetching }] = useLazyGetOrdersQuery();
+  const [updateOrderMutation] = useUpdateOrderMutation();
+  const [fetchProductDetail] = useLazyGetProductQuery();
+  const [updateProductMutation] = useUpdateProductMutation();
 
   const fetchOrders = useCallback(
     async (pageToLoad: number) => {
       try {
-        const params = new URLSearchParams({
-          page: String(pageToLoad),
-          limit: String(PAGE_SIZE),
-        });
-        const res = await fetch(`/api/orders?${params.toString()}`);
-        const data = await res.json();
-        if (!data.success) {
-          throw new Error(data.error ?? "Unable to fetch orders");
-        }
-        setOrders(data.data.items);
-        setTotalPages(Math.max(1, data.data.pages));
-        setPage(data.data.page);
+        const data = await fetchOrdersQuery(
+          { page: pageToLoad, limit: PAGE_SIZE },
+          true,
+        ).unwrap();
+        setOrders(data.items);
+        setTotalPages(Math.max(1, data.pages));
+        setPage(data.page);
         return true;
       } catch (error) {
         console.error(error);
-        push({ title: "Load failed", description: "Unable to fetch orders." });
+        push({ title: "Load failed", description: resolveErrorMessage(error) });
         setOrders([]);
         setTotalPages(1);
         return false;
       }
     },
-    [push],
+    [fetchOrdersQuery, push],
   );
 
   const refreshOrders = useCallback(
@@ -112,25 +133,19 @@ export function AdminOrders() {
         return;
       }
       try {
-        const detailRes = await fetch(`/api/products/${productId}`);
-        const detailData = await detailRes.json();
-        if (!detailRes.ok || !detailData.success) {
-          push({ title: "Inventory update failed", description: "Product info unavailable." });
-          return;
-        }
-        const currentStock = detailData.data.stock ?? 0;
+        const detail = await fetchProductDetail(
+          { id: productId },
+          true,
+        ).unwrap();
+        const currentStock = detail.stock ?? 0;
         const nextStock = Math.max(0, currentStock - delta);
-        await fetch(`/api/products/${productId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ stock: nextStock }),
-        });
+        await updateProductMutation({ id: productId, stock: nextStock }).unwrap();
       } catch (error) {
         console.error(error);
-        push({ title: "Inventory update failed", description: "Unable to sync product stock." });
+        push({ title: "Inventory update failed", description: resolveErrorMessage(error) });
       }
     },
-    [push],
+    [fetchProductDetail, updateProductMutation, push],
   );
 
   const syncStockForStatusChange = useCallback(
@@ -203,21 +218,12 @@ export function AdminOrders() {
   const updateStatus = async (order: OrderSummary, status: OrderStatus) => {
     setTableBusy(true);
     try {
-      const res = await fetch(`/api/orders/${order.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        push({ title: "Update failed", description: data?.error ?? "Try again." });
-        return;
-      }
-
+      await updateOrderMutation({ id: order.id, body: { status } }).unwrap();
       await syncStockForStatusChange(order, status);
       push({ title: "Order updated" });
       await refreshOrders();
+    } catch (error) {
+      push({ title: "Update failed", description: resolveErrorMessage(error) });
     } finally {
       setTableBusy(false);
     }

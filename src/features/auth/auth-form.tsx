@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useLoginMutation, useRegisterMutation } from "@/lib/store/api";
 
 type AuthFormProps = {
   mode: "login" | "register";
@@ -13,8 +14,26 @@ type AuthFormProps = {
 export function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter();
   const { push } = useToast();
-  const [loading, setLoading] = useState(false);
+  const [login, { isLoading: loginLoading }] = useLoginMutation();
+  const [register, { isLoading: registerLoading }] = useRegisterMutation();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const loading = mode === "register" ? registerLoading : loginLoading;
+
+  const resolveErrorMessage = (error: unknown) => {
+    if (typeof error === "object" && error && "data" in error) {
+      const data = (error as { data?: { error?: string } }).data;
+      if (data && typeof data === "object" && "error" in data) {
+        const message = (data as { error?: string }).error;
+        if (typeof message === "string") {
+          return message;
+        }
+      }
+    }
+    if (error instanceof Error) {
+      return error.message;
+    }
+    return "Try again.";
+  };
 
   const updateField = (field: keyof typeof form) =>
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -35,32 +54,21 @@ export function AuthForm({ mode }: AuthFormProps) {
       push({ title: "Password too short", description: "Use at least 6 characters." });
       return;
     }
-    setLoading(true);
-
     const payload =
       mode === "register"
         ? { name: form.name, email: form.email, password: form.password }
         : { email: form.email, password: form.password };
-
-    const res = await fetch(`/api/auth/${mode}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    setLoading(false);
-    const data = await res.json();
-
-    if (!res.ok || !data.success) {
-      push({ title: "Authentication failed", description: data.error ?? "Try again." });
-      return;
-    }
-
-    push({ title: "Welcome back", description: "You are signed in." });
-    if (data.data.role === "admin") {
-      router.push("/admin");
-    } else {
-      router.push("/dashboard");
+    try {
+      const mutate = mode === "register" ? register : login;
+      const user = await mutate(payload).unwrap();
+      push({ title: "Welcome back", description: "You are signed in." });
+      if (user.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      push({ title: "Authentication failed", description: resolveErrorMessage(error) });
     }
   };
 

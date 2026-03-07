@@ -1,51 +1,72 @@
-import { create } from "zustand";
-import type { WishlistState } from "@/types/wishlist";
-import { apiRequest } from "@/services/api-client";
+"use client";
 
-type WishlistStore = {
-  wishlist: WishlistState | null;
-  loading: boolean;
-  load: () => Promise<void>;
-  add: (productId: string) => Promise<void>;
-  remove: (productId: string) => Promise<void>;
-  reset: () => void;
-};
+import { useCallback } from "react";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { api } from "@/lib/store/api";
+import { wishlistActions } from "@/lib/store/slices/wishlist-slice";
 
-export const useWishlistStore = create<WishlistStore>((set) => ({
-  wishlist: null,
-  loading: false,
-  load: async () => {
-    set({ loading: true });
+export function useWishlistStore() {
+  const dispatch = useAppDispatch();
+  const { wishlist, loading } = useAppSelector((state) => state.wishlist);
+
+  const load = useCallback(async () => {
+    const action = dispatch(
+      api.endpoints.getWishlist.initiate(undefined, {
+        subscribe: false,
+        forceRefetch: true,
+      }),
+    );
     try {
-      const wishlist = await apiRequest<WishlistState>("/api/wishlist");
-      set({ wishlist, loading: false });
-    } catch {
-      set({ wishlist: null, loading: false });
+      await action.unwrap();
+    } finally {
+      action.unsubscribe();
     }
-  },
-  add: async (productId) => {
-    set({ loading: true });
-    try {
-      const wishlist = await apiRequest<WishlistState>("/api/wishlist", {
-        method: "POST",
-        body: JSON.stringify({ productId }),
-      });
-      set({ wishlist, loading: false });
-    } catch {
-      set({ loading: false });
-    }
-  },
-  remove: async (productId) => {
-    set({ loading: true });
-    try {
-      const wishlist = await apiRequest<WishlistState>("/api/wishlist", {
-        method: "DELETE",
-        body: JSON.stringify({ productId }),
-      });
-      set({ wishlist, loading: false });
-    } catch {
-      set({ loading: false });
-    }
-  },
-  reset: () => set({ wishlist: null, loading: false }),
-}));
+  }, [dispatch]);
+
+  const add = useCallback(
+    async (productId: string) => {
+      const action = dispatch(
+        api.endpoints.addWishlistItem.initiate(
+          { productId },
+          { subscribe: false },
+        ),
+      );
+      try {
+        await action.unwrap();
+      } finally {
+        action.unsubscribe();
+      }
+    },
+    [dispatch],
+  );
+
+  const remove = useCallback(
+    async (productId: string) => {
+      const action = dispatch(
+        api.endpoints.removeWishlistItem.initiate(
+          { productId },
+          { subscribe: false },
+        ),
+      );
+      try {
+        await action.unwrap();
+      } finally {
+        action.unsubscribe();
+      }
+    },
+    [dispatch],
+  );
+
+  const reset = useCallback(() => {
+    dispatch(wishlistActions.resetWishlist());
+  }, [dispatch]);
+
+  return {
+    wishlist,
+    loading,
+    load,
+    add,
+    remove,
+    reset,
+  };
+}

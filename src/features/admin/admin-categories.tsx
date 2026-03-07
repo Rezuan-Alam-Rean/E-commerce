@@ -1,57 +1,63 @@
 "use client";
 
-import { useCallback, useEffect, useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useToast } from "@/hooks/use-toast";
+import {
+  useCreateCategoryMutation,
+  useDeleteCategoryMutation,
+  useGetCategoriesQuery,
+} from "@/lib/store/api";
 
 type Category = { id: string; name: string; slug: string };
 
 export function AdminCategories() {
   const { push } = useToast();
   const [name, setName] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
+  const { data: categories = [], isFetching } = useGetCategoriesQuery();
+  const [createCategory, { isLoading: creating }] = useCreateCategoryMutation();
+  const [deleteCategory, { isLoading: deleting }] = useDeleteCategoryMutation();
 
-  const load = useCallback(async () => {
-    const res = await fetch("/api/categories");
-    const data = await res.json();
-    setCategories(data.success ? data.data : []);
-  }, []);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      void load();
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [load]);
+  const resolveErrorMessage = (error: unknown) => {
+    if (typeof error === "object" && error && "data" in error) {
+      const data = (error as { data?: { error?: string } }).data;
+      if (data && typeof data === "object" && "error" in data) {
+        const message = (data as { error?: string }).error;
+        if (typeof message === "string") {
+          return message;
+        }
+      }
+    }
+    if (error instanceof Error) {
+      return error.message;
+    }
+    return "Try again.";
+  };
 
   const create = async () => {
-    const res = await fetch("/api/categories", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name }),
-    });
-
-    if (!res.ok) {
-      const data = await res.json().catch(() => null);
-      push({ title: "Create failed", description: data?.error ?? "Try again." });
+    const value = name.trim();
+    if (!value) {
+      push({ title: "Name required", description: "Enter a category name." });
       return;
     }
-
-    setName("");
-    push({ title: "Category added" });
-    load();
+    try {
+      await createCategory({ name: value }).unwrap();
+      setName("");
+      push({ title: "Category added" });
+    } catch (error) {
+      push({ title: "Create failed", description: resolveErrorMessage(error) });
+    }
   };
 
   const remove = async (id: string) => {
-    const res = await fetch(`/api/categories/${id}`, { method: "DELETE" });
-    if (!res.ok) {
-      push({ title: "Delete failed" });
-      return;
+    try {
+      await deleteCategory({ id }).unwrap();
+      push({ title: "Category removed" });
+    } catch (error) {
+      push({ title: "Delete failed", description: resolveErrorMessage(error) });
     }
-    push({ title: "Category removed" });
-    load();
   };
 
   return (
@@ -63,12 +69,16 @@ export function AdminCategories() {
             value={name}
             onChange={(event: ChangeEvent<HTMLInputElement>) => setName(event.target.value)}
           />
-          <Button type="button" onClick={create}>
-            Add Category
+          <Button type="button" onClick={create} disabled={creating}>
+            {creating ? "Adding" : "Add Category"}
           </Button>
         </div>
       </div>
-      {categories.length === 0 ? (
+      {isFetching ? (
+        <div className="rounded-[var(--radius-md)] border border-border bg-white p-4 text-sm text-muted">
+          Loading categories...
+        </div>
+      ) : categories.length === 0 ? (
         <EmptyState
           title="No categories"
           description="Create categories to organize products."
@@ -84,8 +94,13 @@ export function AdminCategories() {
                 <p className="text-sm font-semibold text-foreground">{category.name}</p>
                 <p className="text-xs text-muted">{category.slug}</p>
               </div>
-              <Button variant="ghost" type="button" onClick={() => remove(category.id)}>
-                Delete
+              <Button
+                variant="ghost"
+                type="button"
+                onClick={() => remove(category.id)}
+                disabled={deleting}
+              >
+                {deleting ? "Removing" : "Delete"}
               </Button>
             </div>
           ))}

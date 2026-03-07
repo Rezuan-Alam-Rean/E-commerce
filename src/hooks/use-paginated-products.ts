@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ProductSummary } from "@/types/product";
+import { useGetProductsQuery } from "@/lib/store/api";
 
 type PaginatedProductFilters = {
   search?: string;
@@ -26,80 +27,29 @@ export function usePaginatedProducts(
   pageSize = DEFAULT_PAGE_SIZE,
 ): PaginatedProductsResult {
   const [page, setInternalPage] = useState(1);
-  const [products, setProducts] = useState<ProductSummary[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
-
   const { search, category, featured, trending, flash } = filters;
 
   const setPage = useCallback((nextPage: number) => {
     setInternalPage(Math.max(1, nextPage));
   }, []);
 
+  const queryArgs = useMemo(
+    () => ({ page, limit: pageSize, search, category, featured, trending, flash }),
+    [page, pageSize, search, category, featured, trending, flash],
+  );
+
+  const { data, isFetching } = useGetProductsQuery(queryArgs);
+
   useEffect(() => {
-    let cancelled = false;
+    setInternalPage(1);
+  }, [search, category, featured, trending, flash, pageSize]);
 
-    const fetchProducts = async () => {
-      setLoading(true);
-
-      try {
-        const params = new URLSearchParams({
-          page: String(page),
-          limit: String(pageSize),
-        });
-
-        if (search) {
-          params.set("search", search);
-        }
-        if (category) {
-          params.set("category", category);
-        }
-        if (featured) {
-          params.set("featured", "true");
-        }
-        if (trending) {
-          params.set("trending", "true");
-        }
-        if (flash) {
-          params.set("flash", "true");
-        }
-
-        const response = await fetch(`/api/products?${params.toString()}`);
-        const data = await response.json();
-
-        if (cancelled) {
-          return;
-        }
-
-        if (data?.success) {
-          setProducts(data.data.items);
-          setTotalPages(Math.max(1, data.data.pages));
-        } else {
-          setProducts([]);
-          setTotalPages(1);
-        }
-      } catch {
-        if (!cancelled) {
-          setProducts([]);
-          setTotalPages(1);
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchProducts();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [category, featured, flash, page, pageSize, search, trending]);
+  const products = data?.items ?? [];
+  const totalPages = Math.max(1, data?.pages ?? 1);
 
   return {
     products,
-    loading,
+    loading: isFetching,
     page,
     totalPages,
     setPage,

@@ -17,7 +17,7 @@ Premium, full-stack ecommerce experience built with the Next.js App Router, Mong
 - Next.js App Router + TypeScript
 - MongoDB + Mongoose
 - JWT + bcrypt
-- Zustand state management
+- Redux Toolkit + RTK Query state management
 - Tailwind CSS
 
 ## Getting Started

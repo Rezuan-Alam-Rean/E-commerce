@@ -1,24 +1,26 @@
-import { create } from "zustand";
-import { nanoid } from "nanoid";
+"use client";
 
-type Toast = {
-  id: string;
-  title: string;
-  description?: string;
-};
+import { useCallback } from "react";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { toastActions } from "@/lib/store/slices/toast-slice";
 
-type ToastStore = {
-  toasts: Toast[];
-  push: (toast: Omit<Toast, "id">) => void;
-  remove: (id: string) => void;
-};
+export function useToast() {
+  const dispatch = useAppDispatch();
+  const toasts = useAppSelector((state) => state.toast);
 
-export const useToast = create<ToastStore>((set) => ({
-  toasts: [],
-  push: (toast) =>
-    set((state) => ({
-      toasts: [...state.toasts, { ...toast, id: nanoid() }],
-    })),
-  remove: (id) =>
-    set((state) => ({ toasts: state.toasts.filter((toast) => toast.id !== id) })),
-}));
+  const push = useCallback(
+    (toast: { title: string; description?: string }) => {
+      dispatch(toastActions.pushToast(toast));
+    },
+    [dispatch],
+  );
+
+  const remove = useCallback(
+    (id: string) => {
+      dispatch(toastActions.removeToast(id));
+    },
+    [dispatch],
+  );
+
+  return { toasts, push, remove };
+}

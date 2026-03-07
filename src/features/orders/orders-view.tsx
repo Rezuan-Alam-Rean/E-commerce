@@ -9,6 +9,27 @@ import type { OrderSummary } from "@/types/order";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/utils/format";
 import { PaginationButtons } from "@/components/ui/pagination-buttons";
+import {
+  useLazyGetOrdersQuery,
+  useCancelOrderMutation,
+  useUpdateOrderMutation,
+} from "@/lib/store/api";
+
+const resolveErrorMessage = (error: unknown) => {
+  if (typeof error === "object" && error && "data" in error) {
+    const data = (error as { data?: { error?: string } }).data;
+    if (data && typeof data === "object" && "error" in data) {
+      const message = (data as { error?: string }).error;
+      if (typeof message === "string") {
+        return message;
+      }
+    }
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return "Unable to complete request.";
+};
 
 export function OrdersView() {
   const { push } = useToast();
@@ -17,27 +38,28 @@ export function OrdersView() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [fetchOrdersQuery, { isFetching: ordersFetching }] = useLazyGetOrdersQuery();
+  const [cancelOrderMutation] = useCancelOrderMutation();
+  const [updateOrderMutation] = useUpdateOrderMutation();
 
   const fetchOrders = useCallback(
     async (pageToLoad: number) => {
-      const params = new URLSearchParams({
-        page: String(pageToLoad),
-        limit: "8",
-      });
-      const res = await fetch(`/api/orders?${params.toString()}`);
-      const data = await res.json();
-      if (!data.success) {
-        push({ title: "Load failed", description: data.error ?? "Unable to fetch orders." });
+      try {
+        const data = await fetchOrdersQuery(
+          { page: pageToLoad, limit: 8 },
+          true,
+        ).unwrap();
+        setOrders(data.items);
+        setTotalPages(Math.max(1, data.pages));
+        setPage(data.page);
+      } catch (error) {
+        push({ title: "Load failed", description: resolveErrorMessage(error) });
         setOrders([]);
         setTotalPages(1);
         setPage(1);
-        return;
       }
-      setOrders(data.data.items);
-      setTotalPages(Math.max(1, data.data.pages));
-      setPage(data.data.page);
     },
-    [push],
+    [fetchOrdersQuery, push],
   );
 
   const load = useCallback(
@@ -60,29 +82,23 @@ export function OrdersView() {
   }, [load]);
 
   const cancelOrder = async (orderId: string) => {
-    const res = await fetch(`/api/orders/${orderId}`, { method: "DELETE" });
-    if (!res.ok) {
-      push({ title: "Cancel failed", description: "Try again." });
-      return;
+    try {
+      await cancelOrderMutation({ id: orderId }).unwrap();
+      push({ title: "Order cancelled" });
+      load(page);
+    } catch (error) {
+      push({ title: "Cancel failed", description: resolveErrorMessage(error) });
     }
-    push({ title: "Order cancelled" });
-    load(page);
   };
 
   const updateDelivery = async (orderId: string, option: string) => {
-    const res = await fetch(`/api/orders/${orderId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ deliveryOption: option }),
-    });
-
-    if (!res.ok) {
-      push({ title: "Update failed", description: "Try again." });
-      return;
+    try {
+      await updateOrderMutation({ id: orderId, body: { deliveryOption: option } }).unwrap();
+      push({ title: "Delivery updated" });
+      load(page);
+    } catch (error) {
+      push({ title: "Update failed", description: resolveErrorMessage(error) });
     }
-
-    push({ title: "Delivery updated" });
-    load(page);
   };
 
   const handlePageChange = (nextPage: number) => {

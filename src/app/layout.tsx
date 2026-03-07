@@ -4,6 +4,7 @@ import "./globals.css";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { ToastViewport } from "@/components/ui/toast";
+import { ReduxProvider } from "@/lib/store/provider";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -30,12 +31,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${jakarta.variable} ${fraunces.variable} antialiased`}>
-        <div className="flex min-h-screen flex-col">
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <SiteFooter />
-        </div>
-        <ToastViewport />
+        <ReduxProvider>
+          <div className="flex min-h-screen flex-col">
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+          </div>
+          <ToastViewport />
+        </ReduxProvider>
       </body>
     </html>
   );
