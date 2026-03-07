@@ -55,32 +55,39 @@ export function ProfileForm({ profile }: { profile: UserProfile }) {
   }, [avatarPreview]);
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3">
-      <div className="flex items-center gap-4">
-        <div className="h-16 w-16 overflow-hidden rounded-full border border-border bg-surface-strong">
-          {avatarPreview ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={avatarPreview}
-              src={avatarPreview}
-              alt="Profile"
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-muted">
-              {form.name.trim().slice(0, 1).toUpperCase()}
-            </div>
-          )}
+    <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+      <div className="flex flex-col gap-5 rounded-[32px] border border-[#e6d7be] bg-gradient-to-r from-[#fff8ef] via-white to-[#f2f8f5] p-6 shadow-[0_15px_40px_rgba(0,0,0,0.08)] md:flex-row md:items-center">
+        <div className="flex items-center gap-4">
+          <div className="h-20 w-20 overflow-hidden rounded-2xl border-2 border-white shadow-lg">
+            {avatarPreview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={avatarPreview}
+                src={avatarPreview}
+                alt="Profile"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-[#0f5132]/5 text-lg font-semibold text-[#0f5132]">
+                {form.name.trim().slice(0, 1).toUpperCase()}
+              </div>
+            )}
+          </div>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#6b5c4a]">
+              Profile photo
+            </p>
+            <p className="text-[11px] text-muted">PNG, JPG up to 5MB</p>
+          </div>
         </div>
-        <label className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
-          Upload photo
-          <span className="mt-1 block text-[10px] uppercase tracking-[0.2em] text-muted">
-            Save changes to apply
+        <label className="flex-1 space-y-2 rounded-2xl border border-[#dcd1be] bg-white/90 p-4 text-left shadow-sm">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#6b5c4a]">
+            Upload photo
           </span>
           <input
             type="file"
             accept="image/*"
-            className="mt-2 block w-full rounded-full border border-border bg-white px-4 py-2 text-xs"
+            className="w-full cursor-pointer rounded-2xl border border-dashed border-[#e3d6c1] bg-[#faf4ea] px-4 py-3 text-xs"
             onChange={(event) => {
               const file = event.target.files?.[0];
               if (!file) {
@@ -101,25 +108,41 @@ export function ProfileForm({ profile }: { profile: UserProfile }) {
               reader.readAsDataURL(file);
             }}
           />
+          <p className="text-[11px] uppercase tracking-[0.24em] text-muted">Save changes to apply</p>
         </label>
       </div>
-      <label className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
-        Name
-        <Input value={form.name} onChange={updateField("name")} placeholder="Name" />
-      </label>
-      <label className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
-        Phone
-        <Input value={form.phone} onChange={updateField("phone")} placeholder="Phone" />
-      </label>
-      <label className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
-        Address
-        <Input
-          value={form.address}
-          onChange={updateField("address")}
-          placeholder="Address"
-        />
-      </label>
-      <Button type="submit">Save changes</Button>
+      <div className="grid gap-4 md:grid-cols-2">
+        <label className="flex flex-col gap-2 rounded-2xl border border-[#e6d7be] bg-white/90 p-5 text-left shadow-sm">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#6b5c4a]">Name</span>
+          <Input
+            value={form.name}
+            onChange={updateField("name")}
+            placeholder="Name"
+            className="rounded-2xl border border-transparent bg-[#f9f4ec] px-4 py-3 text-base focus:border-[#0f5132] focus:bg-white"
+          />
+        </label>
+        <label className="flex flex-col gap-2 rounded-2xl border border-[#e6d7be] bg-white/90 p-5 text-left shadow-sm">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#6b5c4a]">Phone</span>
+          <Input
+            value={form.phone}
+            onChange={updateField("phone")}
+            placeholder="Phone"
+            className="rounded-2xl border border-transparent bg-[#f9f4ec] px-4 py-3 text-base focus:border-[#0f5132] focus:bg-white"
+          />
+        </label>
+        <label className="md:col-span-2 flex flex-col gap-2 rounded-2xl border border-[#e6d7be] bg-white/90 p-5 text-left shadow-sm">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#6b5c4a]">Address</span>
+          <Input
+            value={form.address}
+            onChange={updateField("address")}
+            placeholder="Address"
+            className="rounded-2xl border border-transparent bg-[#f9f4ec] px-4 py-3 text-base focus:border-[#0f5132] focus:bg-white"
+          />
+        </label>
+      </div>
+      <Button type="submit" className="w-full md:w-auto">
+        Save changes
+      </Button>
     </form>
   );
 }

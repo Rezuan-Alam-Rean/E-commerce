@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { useCartStore } from "@/features/cart/cart.store";
 import { useToast } from "@/hooks/use-toast";
+import { formatCurrency } from "@/utils/format";
 
 export function CheckoutForm() {
   const router = useRouter();
@@ -167,7 +168,7 @@ export function CheckoutForm() {
                   <span className="text-foreground">{item.product.name}</span>
                 </div>
                 <span className="text-xs text-muted">
-                  {item.quantity} × ${item.unitPrice.toFixed(2)}
+                  {item.quantity} × {formatCurrency(item.unitPrice)}
                 </span>
               </div>
             ))}

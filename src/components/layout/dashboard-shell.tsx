@@ -20,7 +20,6 @@ type DashboardShellProps = {
 };
 
 export function DashboardShell({ title, items, children, requiredRole }: DashboardShellProps) {
-  const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, loading, logout, load } = useAuth();
   const pathname = usePathname();
@@ -66,71 +65,90 @@ export function DashboardShell({ title, items, children, requiredRole }: Dashboa
     resetWishlist();
   };
 
+  const resolvedRoleLabel =
+    user?.role === "admin"
+      ? "Administrator"
+      : user?.role === "user"
+        ? "Customer"
+        : requiredRole === "admin"
+          ? "Administrator"
+          : requiredRole === "user"
+            ? "Customer"
+            : "Account";
+
   return (
-    <div className="min-h-screen bg-surface">
-      <div className="mx-auto grid w-full max-w-6xl gap-6 px-6 py-8 md:grid-cols-[240px_1fr]">
-        <aside
-          className={`hidden rounded-[24px] bg-white p-5 shadow-[var(--shadow)] transition md:block ${
-            collapsed ? "md:w-20" : "md:w-full"
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
-              {collapsed ? "D" : "Dashboard"}
-            </span>
-            <button
-              type="button"
-              className="text-xs font-semibold uppercase tracking-[0.2em] text-muted"
-              onClick={() => setCollapsed((value) => !value)}
-            >
-              {collapsed ? "Expand" : "Collapse"}
-            </button>
-          </div>
-          <nav className="mt-6 flex flex-col gap-3">
-            {items.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition ${
-                  pathname === item.href
-                    ? "border-accent bg-accent text-white"
-                    : "border-border bg-surface-strong text-foreground hover:bg-white"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="rounded-full border border-border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-foreground transition hover:bg-surface-strong"
-            >
-              Logout
-            </button>
-          </nav>
-        </aside>
-        <div className="flex flex-col gap-6">
-          <header className="flex flex-wrap items-center justify-between gap-4 rounded-[24px] bg-white px-6 py-4 shadow-[var(--shadow)]">
-            <button
-              type="button"
-              className="rounded-full border border-border px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] md:hidden"
-              onClick={() => setMobileOpen(true)}
-            >
-              Menu
-            </button>
+    <div className="min-h-screen bg-gradient-to-br from-[#f3f5fb] via-white to-[#f3f5fb] md:pl-[18rem]">
+      <aside className="hidden md:block">
+        <div className="fixed left-6 top-6 flex h-[calc(100vh-3rem)] w-60 flex-col justify-between rounded-3xl border border-border/70 bg-white/90 px-4 py-5 shadow-[0_20px_45px_rgba(15,23,42,0.08)]">
+          <div className="space-y-6">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
-                {user?.role === "admin" ? "Admin" : "Account"}
+              <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-muted">
+                Dashboard
+              </span>
+              <p className="mt-1 text-sm text-foreground/80">
+                {resolvedRoleLabel}
               </p>
-              <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
             </div>
-            {user ? (
-              <div className="text-sm text-muted">{user.email}</div>
-            ) : null}
-          </header>
-          <div className="rounded-[24px] bg-white p-6 shadow-[var(--shadow)]">
-            {children}
+            <nav className="flex flex-col gap-2">
+              {items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`rounded-2xl border px-3 py-2 text-sm font-semibold transition ${
+                    pathname === item.href
+                      ? "border-accent bg-accent/10 text-accent"
+                      : "border-transparent bg-surface-strong text-foreground hover:border-border"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
           </div>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="rounded-2xl border border-border bg-white/80 px-3 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-[1px] hover:bg-white"
+          >
+            Logout
+          </button>
+        </div>
+      </aside>
+      <div className="px-4 py-6 md:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col gap-5 pb-10">
+          <header className="rounded-3xl border border-border/60 bg-white/90 px-5 py-4 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+            <div className="flex flex-wrap items-center gap-4">
+              <button
+                type="button"
+                className="rounded-2xl border border-border px-3 py-2 text-sm font-semibold md:hidden"
+                onClick={() => setMobileOpen(true)}
+              >
+                Menu
+              </button>
+              <div className="flex-1">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-muted">
+                  {resolvedRoleLabel === "Administrator" ? "Admin Console" : "Account Center"}
+                </p>
+                <div className="mt-1 flex flex-wrap items-baseline gap-3">
+                  <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
+                  {user ? <span className="text-sm text-muted">{user.email}</span> : null}
+                </div>
+              </div>
+              <div className="flex gap-2 text-xs text-muted">
+                <span className="rounded-full bg-surface px-3 py-1">
+                  Active
+                </span>
+                <span className="rounded-full bg-surface px-3 py-1">
+                  {new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                </span>
+              </div>
+            </div>
+          </header>
+          <section className="rounded-3xl border border-border/60 bg-white/95 p-6 shadow-[0_25px_65px_rgba(15,23,42,0.08)]">
+            <div className="space-y-6">
+              {children}
+            </div>
+          </section>
         </div>
       </div>
       {mobileOpen ? (
@@ -156,7 +174,7 @@ export function DashboardShell({ title, items, children, requiredRole }: Dashboa
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-full border border-border bg-surface-strong px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]"
+                  className="rounded-2xl border border-border bg-surface-strong px-4 py-2 text-sm font-semibold"
                   onClick={() => setMobileOpen(false)}
                 >
                   {item.label}
@@ -165,7 +183,7 @@ export function DashboardShell({ title, items, children, requiredRole }: Dashboa
               <button
                 type="button"
                 onClick={handleLogout}
-                className="rounded-full border border-border bg-surface-strong px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]"
+                className="rounded-2xl border border-border bg-surface-strong px-4 py-2 text-sm font-semibold"
               >
                 Logout
               </button>

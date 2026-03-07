@@ -65,39 +65,56 @@ export function AuthForm({ mode }: AuthFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 rounded-[32px] border border-[#e0d6c8] bg-white/95 p-8 shadow-[0_25px_60px_rgba(15,40,30,0.12)]"
+    >
+      <div className="space-y-2 text-left">
+        <p className="text-xs font-semibold uppercase tracking-[0.35em] text-muted">
+          Secure access
+        </p>
+        <h2 className="text-3xl font-semibold text-foreground">
+          {mode === "register" ? "Create your commerce identity" : "Sign in to continue"}
+        </h2>
+        <p className="text-sm text-muted">
+          Manage orders, wishlists, and delivery preferences from a single dashboard.
+        </p>
+      </div>
       {mode === "register" ? (
-        <label className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
-          Full name
+        <label className="flex flex-col gap-2 text-left">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-muted">Full name</span>
           <Input
             placeholder="Full name"
             value={form.name}
             onChange={updateField("name")}
+            className="rounded-2xl border border-[#d6cab4] bg-white px-4 py-3 text-base text-foreground shadow-sm focus:border-[#0f5132]"
             required
           />
         </label>
       ) : null}
-      <label className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
-        Email
+      <label className="flex flex-col gap-2 text-left">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-muted">Email</span>
         <Input
           type="email"
-          placeholder="Email"
+          placeholder="you@email.com"
           value={form.email}
           onChange={updateField("email")}
+          className="rounded-2xl border border-[#d6cab4] bg-white px-4 py-3 text-base text-foreground shadow-sm focus:border-[#0f5132]"
           required
         />
       </label>
-      <label className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
-        Password
+      <label className="flex flex-col gap-2 text-left">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-muted">Password</span>
         <Input
           type="password"
-          placeholder="Password"
+          placeholder="Minimum 6 characters"
           value={form.password}
           onChange={updateField("password")}
+          className="rounded-2xl border border-[#d6cab4] bg-white px-4 py-3 text-base text-foreground shadow-sm focus:border-[#0f5132]"
           required
         />
       </label>
-      <Button type="submit" disabled={loading}>
+      <Button type="submit" disabled={loading} className="w-full rounded-[18px] py-3 shadow-lg">
         {loading ? "Processing" : mode === "register" ? "Create account" : "Sign in"}
       </Button>
     </form>

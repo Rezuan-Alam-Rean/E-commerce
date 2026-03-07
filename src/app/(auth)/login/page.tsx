@@ -1,55 +1,31 @@
-import Image from "next/image";
 import Link from "next/link";
 import { AuthForm } from "@/features/auth/auth-form";
 import { AuthRedirectModal } from "@/components/ui/auth-redirect-modal";
 
 export const dynamic = "force-dynamic";
 
-const panelImage =
-  "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1400&q=80";
-
 export default async function LoginPage() {
   return (
-    <section className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-16 md:flex-row">
+    <section className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-6 py-16">
       <AuthRedirectModal />
-      <div className="flex flex-1 flex-col justify-between rounded-[32px] bg-white p-10 shadow-[var(--shadow)]">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
-            Returning customer
-          </p>
-          <h1 className="mt-4 font-serif text-3xl text-foreground">Sign in</h1>
-          <p className="mt-2 text-sm text-muted">
-            Access your orders, wishlist, and enterprise pricing.
+      <div className="rounded-[40px] border border-[#eadfca] bg-gradient-to-br from-[#fff8ef] via-white to-[#f2f8f5] p-10 shadow-[0_30px_80px_rgba(9,50,32,0.12)]">
+        <div className="space-y-3">
+          <span className="inline-flex items-center gap-2 rounded-full bg-[#0f5132]/10 px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-[#0f5132]">
+            Sign in
+          </span>
+          <h1 className="font-serif text-4xl text-foreground">Return to your Bangladesh storefront</h1>
+          <p className="text-sm text-muted">
+            Manage orders, wishlists, and delivery preferences with a single secure login.
           </p>
         </div>
         <div className="mt-8">
           <AuthForm mode="login" />
         </div>
-        <p className="mt-6 text-xs text-muted">
-          New here?{" "}
+        <div className="mt-8 rounded-2xl border border-white/60 bg-white/70 p-4 text-xs text-muted">
+          Need an account?{" "}
           <Link href="/register" className="font-semibold text-foreground underline underline-offset-4">
-            Create an account
+            Create one now
           </Link>
-        </p>
-      </div>
-      <div className="relative flex flex-1 flex-col justify-between overflow-hidden rounded-[32px] bg-gradient-to-br from-[#f2e7d6] via-[#e7d2b6] to-[#d6b68b] p-10 text-foreground">
-        <Image
-          src={panelImage}
-          alt="Featured"
-          fill
-          className="object-cover opacity-70"
-          unoptimized
-        />
-        <div className="relative z-10">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em]">Member perks</p>
-          <h2 className="mt-4 font-serif text-3xl">
-            Exclusive drops and curated bundles.
-          </h2>
-        </div>
-        <p className="text-sm">
-          Join the enterprise program to unlock priority restocks and order insights.
-        </p>
         </div>
       </div>
     </section>

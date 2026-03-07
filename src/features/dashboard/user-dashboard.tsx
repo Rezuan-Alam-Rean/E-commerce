@@ -1,6 +1,7 @@
 import { getAuthPayload } from "@/lib/auth";
 import { listOrders } from "@/services/order.service";
 import { EmptyState } from "@/components/ui/empty-state";
+import { formatCurrency } from "@/utils/format";
 
 export async function UserDashboard() {
   const auth = await getAuthPayload();
@@ -24,7 +25,7 @@ export async function UserDashboard() {
           <div className="rounded-[var(--radius-md)] border border-border p-4">
             <p className="text-xs uppercase tracking-[0.2em] text-muted">Total spend</p>
             <p className="mt-2 text-2xl font-semibold text-foreground">
-              ${totalSpend.toFixed(2)}
+              {formatCurrency(totalSpend)}
             </p>
           </div>
           <div className="rounded-[var(--radius-md)] border border-border p-4">
@@ -67,7 +68,7 @@ export async function UserDashboard() {
                   </span>
                 </div>
                 <p className="mt-2 text-xs text-muted">
-                  {order.items.length} items · ${order.total.toFixed(2)}
+                  {order.items.length} items · {formatCurrency(order.total)}
                 </p>
               </div>
             ))}

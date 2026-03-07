@@ -1,5 +1,6 @@
 import { getAuthPayload } from "@/lib/auth";
 import { getAnalyticsSummary } from "@/services/analytics.service";
+import { formatCurrency } from "@/utils/format";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ export default async function AdminAnalyticsPage() {
       <div className="rounded-[var(--radius-lg)] bg-surface-strong p-6">
         <p className="text-xs uppercase tracking-[0.3em] text-muted">Total Sales</p>
         <p className="mt-3 text-2xl font-semibold text-foreground">
-          ${analytics.totalSales.toFixed(2)}
+          {formatCurrency(analytics.totalSales)}
         </p>
       </div>
       <div className="rounded-[var(--radius-lg)] bg-surface-strong p-6">

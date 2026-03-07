@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/features/cart/cart.store";
 import { EmptyState } from "@/components/ui/empty-state";
+import { formatCurrency } from "@/utils/format";
 
 export function CartView() {
   const { cart, load, updateItem, removeItem } = useCartStore();
@@ -44,7 +45,7 @@ export function CartView() {
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground">{item.product.name}</p>
-              <p className="text-xs text-muted">${item.unitPrice.toFixed(2)}</p>
+              <p className="text-xs text-muted">{formatCurrency(item.unitPrice)}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -66,7 +67,7 @@ export function CartView() {
       <div className="flex flex-col items-start justify-between gap-4 rounded-[var(--radius-lg)] bg-surface-strong p-6 md:flex-row md:items-center">
         <div>
           <span className="text-sm font-semibold text-foreground">Total</span>
-          <p className="text-sm font-semibold text-foreground">${cart.total.toFixed(2)}</p>
+          <p className="text-sm font-semibold text-foreground">{formatCurrency(cart.total)}</p>
         </div>
         <Link
           href="/checkout"

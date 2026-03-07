@@ -3,6 +3,7 @@ import { ProductGrid } from "@/components/products/product-grid";
 import { getProductByIdOrSlug, listProducts } from "@/services/product.service";
 import { ProductActions } from "@/features/products/product-actions";
 import { ProductGallery } from "@/features/products/product-gallery";
+import { formatCurrency } from "@/utils/format";
 
 export async function ProductDetail({ id }: { id: string }) {
   const product = await getProductByIdOrSlug(id);
@@ -25,11 +26,11 @@ export async function ProductDetail({ id }: { id: string }) {
           <p className="text-sm text-muted">{product.description}</p>
           <div className="flex items-center gap-4">
             <span className="text-2xl font-semibold text-foreground">
-              ${product.price.toFixed(2)}
+              {formatCurrency(product.price)}
             </span>
             {product.compareAtPrice ? (
               <span className="text-sm text-muted line-through">
-                ${product.compareAtPrice.toFixed(2)}
+                {formatCurrency(product.compareAtPrice)}
               </span>
             ) : null}
           </div>

@@ -129,6 +129,34 @@ export async function listOrders(userId: string, role: string) {
   return orders.map(toSummary);
 }
 
+export async function listOrdersPaginated(
+  userId: string,
+  role: string,
+  options?: { page?: number; limit?: number },
+) {
+  await connectDb();
+  const query = role === "admin" ? {} : { user: userId };
+  const page = Math.max(options?.page ?? 1, 1);
+  const limit = Math.min(options?.limit ?? 8, 50);
+  const skip = (page - 1) * limit;
+
+  const [orders, total] = await Promise.all([
+    OrderModel.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean<OrderLean[]>(),
+    OrderModel.countDocuments(query),
+  ]);
+
+  return {
+    items: orders.map(toSummary),
+    total,
+    page,
+    pages: Math.max(1, Math.ceil(total / limit)),
+  };
+}
+
 export async function updateOrderStatus(orderId: string, status: string) {
   await connectDb();
   const order = await OrderModel.findByIdAndUpdate(

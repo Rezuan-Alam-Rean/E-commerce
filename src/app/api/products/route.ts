@@ -1,4 +1,3 @@
-import { parseBody } from "@/lib/validation";
 import { productQuerySchema, productSchema } from "@/lib/validators/product";
 import { ok, fail } from "@/lib/response";
 import { getAuthPayload } from "@/lib/auth";

@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { rateLimit } from "@/lib/rate-limit";
 import { parseBody } from "@/lib/validation";

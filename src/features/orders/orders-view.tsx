@@ -1,30 +1,63 @@
 "use client";
 
 import Image from "next/image";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Table, TableCell, TableRow } from "@/components/ui/table";
 import type { OrderSummary } from "@/types/order";
 import { Button } from "@/components/ui/button";
+import { formatCurrency } from "@/utils/format";
+import { PaginationButtons } from "@/components/ui/pagination-buttons";
 
 export function OrdersView() {
   const { push } = useToast();
   const [orders, setOrders] = useState<OrderSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const load = async () => {
-    setLoading(true);
-    const res = await fetch("/api/orders");
-    const data = await res.json();
-    setOrders(data.success ? data.data : []);
-    setLoading(false);
-  };
+  const fetchOrders = useCallback(
+    async (pageToLoad: number) => {
+      const params = new URLSearchParams({
+        page: String(pageToLoad),
+        limit: "8",
+      });
+      const res = await fetch(`/api/orders?${params.toString()}`);
+      const data = await res.json();
+      if (!data.success) {
+        push({ title: "Load failed", description: data.error ?? "Unable to fetch orders." });
+        setOrders([]);
+        setTotalPages(1);
+        setPage(1);
+        return;
+      }
+      setOrders(data.data.items);
+      setTotalPages(Math.max(1, data.data.pages));
+      setPage(data.data.page);
+    },
+    [push],
+  );
+
+  const load = useCallback(
+    async (targetPage = 1) => {
+      setLoading(true);
+      try {
+        await fetchOrders(targetPage);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchOrders],
+  );
 
   useEffect(() => {
-    load();
-  }, []);
+    const timer = setTimeout(() => {
+      void load();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [load]);
 
   const cancelOrder = async (orderId: string) => {
     const res = await fetch(`/api/orders/${orderId}`, { method: "DELETE" });
@@ -33,7 +66,7 @@ export function OrdersView() {
       return;
     }
     push({ title: "Order cancelled" });
-    load();
+    load(page);
   };
 
   const updateDelivery = async (orderId: string, option: string) => {
@@ -49,7 +82,15 @@ export function OrdersView() {
     }
 
     push({ title: "Delivery updated" });
-    load();
+    load(page);
+  };
+
+  const handlePageChange = (nextPage: number) => {
+    if (nextPage === page) {
+      return;
+    }
+    setLoading(true);
+    void fetchOrders(nextPage).finally(() => setLoading(false));
   };
 
   if (loading) {
@@ -66,13 +107,14 @@ export function OrdersView() {
   }
 
   return (
-    <Table headers={["Order", "Status", "Total", "Delivery", "Actions"]}>
-      {orders.map((order) => (
+    <div className="space-y-6">
+      <Table headers={["Order", "Status", "Total", "Delivery", "Actions"]}>
+        {orders.map((order) => (
         <Fragment key={order.id}>
           <TableRow>
             <TableCell>#{order.id.slice(-6).toUpperCase()}</TableCell>
             <TableCell className="uppercase text-muted">{order.status}</TableCell>
-            <TableCell>${order.total.toFixed(2)}</TableCell>
+            <TableCell>{formatCurrency(order.total)}</TableCell>
             <TableCell>
               <select
                 className="rounded-full border border-border bg-surface-strong px-3 py-2 text-xs"
@@ -140,7 +182,7 @@ export function OrdersView() {
                             <span className="text-sm text-foreground">{item.product.name}</span>
                           </div>
                           <span className="text-xs text-muted">
-                            {item.quantity} × ${item.unitPrice.toFixed(2)}
+                            {item.quantity} × {formatCurrency(item.unitPrice)}
                           </span>
                         </div>
                       ))}
@@ -151,7 +193,14 @@ export function OrdersView() {
             </tr>
           ) : null}
         </Fragment>
-      ))}
-    </Table>
+        ))}
+      </Table>
+      <PaginationButtons
+        page={page}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        disabled={loading}
+      />
+    </div>
   );
 }

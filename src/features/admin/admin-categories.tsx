@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useCallback, useEffect, useState, type ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -13,15 +13,18 @@ export function AdminCategories() {
   const [name, setName] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     const res = await fetch("/api/categories");
     const data = await res.json();
     setCategories(data.success ? data.data : []);
-  };
+  }, []);
 
   useEffect(() => {
-    load();
-  }, []);
+    const timer = setTimeout(() => {
+      void load();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [load]);
 
   const create = async () => {
     const res = await fetch("/api/categories", {

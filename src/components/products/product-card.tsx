@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { formatCurrency } from "@/utils/format";
 import type { ProductSummary } from "@/types/product";
 
 type ProductCardProps = {
@@ -8,6 +9,7 @@ type ProductCardProps = {
 
 export function ProductCard({ product }: ProductCardProps) {
   const image = product.images?.[0];
+  const isOutOfStock = product.stock <= 0;
   return (
     <Link
       href={`/products/${product.id}`}
@@ -27,17 +29,27 @@ export function ProductCard({ product }: ProductCardProps) {
             No Image
           </div>
         )}
+        {isOutOfStock ? (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 text-xs font-semibold uppercase tracking-[0.3em] text-white">
+            Out of Stock
+          </div>
+        ) : null}
       </div>
       <div className="flex flex-col gap-2">
         <h3 className="text-sm font-semibold text-foreground">{product.name}</h3>
         <div className="flex items-center justify-between text-sm">
-          <span className="font-semibold text-foreground">${product.price.toFixed(2)}</span>
+          <span className="font-semibold text-foreground">{formatCurrency(product.price)}</span>
           {product.compareAtPrice ? (
             <span className="text-xs text-muted line-through">
-              ${product.compareAtPrice.toFixed(2)}
+              {formatCurrency(product.compareAtPrice)}
             </span>
           ) : null}
         </div>
+        {isOutOfStock ? (
+          <span className="text-xs font-semibold uppercase tracking-[0.3em] text-red-500">
+            Out of Stock
+          </span>
+        ) : null}
       </div>
     </Link>
   );

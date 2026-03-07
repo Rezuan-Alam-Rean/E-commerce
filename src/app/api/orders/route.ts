@@ -1,15 +1,19 @@
 import { getAuthPayload } from "@/lib/auth";
 import { ok, fail } from "@/lib/response";
 import { createOrderSchema } from "@/lib/validators/order";
-import { createOrderFromCart, listOrders } from "@/services/order.service";
+import { createOrderFromCart, listOrdersPaginated } from "@/services/order.service";
 
-export async function GET() {
+export async function GET(req: Request) {
   const auth = await getAuthPayload();
   if (!auth) {
     return fail("Unauthorized", 401);
   }
 
-  const orders = await listOrders(auth.userId, auth.role);
+  const url = new URL(req.url);
+  const page = Number(url.searchParams.get("page") ?? "1");
+  const limit = Number(url.searchParams.get("limit") ?? "8");
+
+  const orders = await listOrdersPaginated(auth.userId, auth.role, { page, limit });
   return ok(orders);
 }
 

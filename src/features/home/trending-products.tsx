@@ -1,9 +1,12 @@
-import { SectionHeading } from "@/components/ui/section-heading";
-import { ProductGrid } from "@/components/products/product-grid";
-import { listProducts } from "@/services/product.service";
+"use client";
 
-export async function TrendingProducts() {
-  const products = await listProducts({ trending: true, limit: 8 });
+import { SectionHeading } from "@/components/ui/section-heading";
+import { ProductGrid, ProductGridSkeleton } from "@/components/products/product-grid";
+import { PaginationButtons } from "@/components/ui/pagination-buttons";
+import { usePaginatedProducts } from "@/hooks/use-paginated-products";
+
+export function TrendingProducts() {
+  const { products, loading, page, totalPages, setPage } = usePaginatedProducts({ trending: true });
 
   return (
     <section className="mx-auto w-full max-w-6xl px-6 py-12">
@@ -12,12 +15,17 @@ export async function TrendingProducts() {
         title="Momentum-ready best sellers"
         description="High-interest products trending across regions."
       />
-      <div className="mt-8">
-        <ProductGrid
-          products={products.items}
-          emptyTitle="No trending products"
-          emptyDescription="Flag products as trending to feature them here."
-        />
+      <div className="mt-8 space-y-6">
+        {loading ? (
+          <ProductGridSkeleton />
+        ) : (
+          <ProductGrid
+            products={products}
+            emptyTitle="No trending products"
+            emptyDescription="Flag products as trending to feature them here."
+          />
+        )}
+        <PaginationButtons page={page} totalPages={totalPages} onPageChange={setPage} />
       </div>
     </section>
   );

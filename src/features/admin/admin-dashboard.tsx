@@ -2,6 +2,7 @@ import { getAuthPayload } from "@/lib/auth";
 import { getAnalyticsSummary } from "@/services/analytics.service";
 import { listOrders } from "@/services/order.service";
 import { EmptyState } from "@/components/ui/empty-state";
+import { formatCurrency } from "@/utils/format";
 
 export async function AdminDashboard() {
   const auth = await getAuthPayload();
@@ -18,7 +19,7 @@ export async function AdminDashboard() {
         <div className="rounded-[var(--radius-lg)] bg-white p-6 shadow-[var(--shadow)]">
           <p className="text-xs uppercase tracking-[0.3em] text-muted">Total Sales</p>
           <p className="mt-3 text-2xl font-semibold text-foreground">
-            ${analytics.totalSales.toFixed(2)}
+            {formatCurrency(analytics.totalSales)}
           </p>
         </div>
         <div className="rounded-[var(--radius-lg)] bg-white p-6 shadow-[var(--shadow)]">
@@ -54,7 +55,7 @@ export async function AdminDashboard() {
                   </span>
                 </div>
                 <p className="mt-2 text-xs text-muted">
-                  {order.items.length} items · ${order.total.toFixed(2)}
+                  {order.items.length} items · {formatCurrency(order.total)}
                 </p>
               </div>
             ))}

@@ -3,6 +3,7 @@ import { ProductGrid } from "@/components/products/product-grid";
 import { ProductFilters } from "@/features/products/product-filters";
 import { listProducts } from "@/services/product.service";
 import { listCategories } from "@/services/category.service";
+import { PaginationLinks } from "@/components/ui/pagination-links";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -33,13 +34,12 @@ export async function ProductListing({ searchParams }: { searchParams: SearchPar
     search,
     category,
     page,
-    limit: 12,
+    limit: 8,
   });
   const categories = await listCategories();
   const totalPages = Math.max(products.pages, 1);
-  const baseQuery = buildQuery({ search, category });
-  const prevQuery = buildQuery({ search, category, page: String(Math.max(1, page - 1)) });
-  const nextQuery = buildQuery({ search, category, page: String(Math.min(totalPages, page + 1)) });
+  const makeHref = (targetPage: number) =>
+    `/products${buildQuery({ search, category, page: String(targetPage) })}`;
 
   return (
     <section className="mx-auto w-full max-w-6xl px-6 py-12">
@@ -55,27 +55,11 @@ export async function ProductListing({ searchParams }: { searchParams: SearchPar
           emptyTitle="No products yet"
           emptyDescription="Add products from the admin dashboard to populate the catalog."
         />
-        {totalPages > 1 ? (
-          <div className="flex items-center justify-between text-xs text-muted">
-            <span>
-              Page {products.page} of {totalPages}
-            </span>
-            <div className="flex gap-2">
-              <a
-                href={`/products${prevQuery || baseQuery}`}
-                className="rounded-full border border-border px-4 py-2"
-              >
-                Prev
-              </a>
-              <a
-                href={`/products${nextQuery || baseQuery}`}
-                className="rounded-full border border-border px-4 py-2"
-              >
-                Next
-              </a>
-            </div>
-          </div>
-        ) : null}
+        <PaginationLinks
+          page={products.page}
+          totalPages={totalPages}
+          makeHref={makeHref}
+        />
       </div>
     </section>
   );

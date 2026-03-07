@@ -3,7 +3,6 @@ import { CategorySection } from "@/features/home/category-section";
 import { FeaturedProducts } from "@/features/home/featured-products";
 import { TrendingProducts } from "@/features/home/trending-products";
 import { FlashSale } from "@/features/home/flash-sale";
-import { Newsletter } from "@/features/home/newsletter";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +14,6 @@ export default function HomePage() {
       <FeaturedProducts />
       <TrendingProducts />
       <FlashSale />
-      <Newsletter />
     </div>
   );
 }

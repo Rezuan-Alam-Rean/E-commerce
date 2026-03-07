@@ -8,9 +8,11 @@ export function AuthRedirectModal() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (searchParams.get("reason") === "auth") {
-      setOpen(true);
+    if (searchParams.get("reason") !== "auth") {
+      return;
     }
+    const frame = requestAnimationFrame(() => setOpen(true));
+    return () => cancelAnimationFrame(frame);
   }, [searchParams]);
 
   useEffect(() => {
