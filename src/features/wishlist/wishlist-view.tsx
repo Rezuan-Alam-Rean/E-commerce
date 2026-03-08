@@ -37,8 +37,8 @@ export function WishlistView() {
   if (!wishlist || wishlist.products.length === 0) {
     return (
       <EmptyState
-        title="Your wishlist is empty"
-        description="Save products to keep track of future buys."
+        title="উইশলিস্ট খালি"
+        description="যে পণ্যগুলো পরে কিনবেন বলে ভাবছেন সেগুলো এখানে সেভ করুন।"
       />
     );
   }
@@ -68,10 +68,13 @@ export function WishlistView() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Link href={`/products/${product.id}`} className="text-xs font-semibold uppercase tracking-[0.2em]">
+            <Link
+              href={`/products/${product.id}`}
+              className="text-xs font-semibold uppercase tracking-[0.2em] font-english"
+            >
               View
             </Link>
-            <Button variant="ghost" type="button" onClick={() => remove(product.id)}>
+            <Button variant="ghost" type="button" onClick={() => remove(product.id)} className="font-english">
               Remove
             </Button>
           </div>

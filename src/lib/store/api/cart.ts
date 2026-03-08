@@ -4,7 +4,7 @@ import { api } from "./base";
 import { unwrap } from "./helpers";
 import type { CartDeliveryPayload, CartItemPayload } from "./types";
 
-const cartApi = api.injectEndpoints({
+export const cartApi = api.injectEndpoints({
   endpoints: (build) => ({
     getCart: build.query<CartState, void>({
       query: () => ({ url: "cart" }),

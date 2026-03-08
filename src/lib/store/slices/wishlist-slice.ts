@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { WishlistState } from "@/types/wishlist";
-import { api } from "../api";
+import { wishlistApi } from "../api/wishlist";
 
 export type WishlistSliceState = {
   wishlist: WishlistState | null;
@@ -20,35 +20,35 @@ const wishlistSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addMatcher(api.endpoints.getWishlist.matchPending, (state) => {
+      .addMatcher(wishlistApi.endpoints.getWishlist.matchPending, (state) => {
         state.loading = true;
       })
-      .addMatcher(api.endpoints.getWishlist.matchFulfilled, (state, { payload }) => {
+      .addMatcher(wishlistApi.endpoints.getWishlist.matchFulfilled, (state, { payload }) => {
         state.wishlist = payload;
         state.loading = false;
       })
-      .addMatcher(api.endpoints.getWishlist.matchRejected, (state) => {
+      .addMatcher(wishlistApi.endpoints.getWishlist.matchRejected, (state) => {
         state.wishlist = null;
         state.loading = false;
       })
-      .addMatcher(api.endpoints.addWishlistItem.matchPending, (state) => {
+      .addMatcher(wishlistApi.endpoints.addWishlistItem.matchPending, (state) => {
         state.loading = true;
       })
-      .addMatcher(api.endpoints.addWishlistItem.matchFulfilled, (state, { payload }) => {
+      .addMatcher(wishlistApi.endpoints.addWishlistItem.matchFulfilled, (state, { payload }) => {
         state.wishlist = payload;
         state.loading = false;
       })
-      .addMatcher(api.endpoints.addWishlistItem.matchRejected, (state) => {
+      .addMatcher(wishlistApi.endpoints.addWishlistItem.matchRejected, (state) => {
         state.loading = false;
       })
-      .addMatcher(api.endpoints.removeWishlistItem.matchPending, (state) => {
+      .addMatcher(wishlistApi.endpoints.removeWishlistItem.matchPending, (state) => {
         state.loading = true;
       })
-      .addMatcher(api.endpoints.removeWishlistItem.matchFulfilled, (state, { payload }) => {
+      .addMatcher(wishlistApi.endpoints.removeWishlistItem.matchFulfilled, (state, { payload }) => {
         state.wishlist = payload;
         state.loading = false;
       })
-      .addMatcher(api.endpoints.removeWishlistItem.matchRejected, (state) => {
+      .addMatcher(wishlistApi.endpoints.removeWishlistItem.matchRejected, (state) => {
         state.loading = false;
       });
   },

@@ -2,7 +2,10 @@ import { Types } from "mongoose";
 import { connectDb } from "@/lib/db";
 import { OrderModel } from "@/models/order";
 import { CartModel } from "@/models/cart";
+import { ProductModel } from "@/models/product";
+import type { SessionOwner } from "@/types/session";
 import type { OrderSummary } from "@/types/order";
+import type { DeliveryOption } from "@/lib/constants";
 
 type OrderItemLean = {
   product: Types.ObjectId;
@@ -74,37 +77,108 @@ const toSummary = (order: OrderLean): OrderSummary => ({
   createdAt: order.createdAt.toISOString(),
 });
 
-export async function createOrderFromCart(
-  userId: string,
+type DirectItemInput = {
+  productId: string;
+  quantity: number;
+};
+
+type ProductLean = {
+  _id: Types.ObjectId;
+  name: string;
+  images?: string[];
+  price: number;
+  stock: number;
+  status: string;
+};
+
+const ownerFilter = (owner: SessionOwner) =>
+  owner.kind === "user" ? { user: owner.userId } : { guestToken: owner.guestToken };
+
+export async function createOrder(
+  owner: SessionOwner,
   input: {
     shippingName: string;
     shippingPhone: string;
     shippingAddress: string;
-    deliveryOption: string;
+    deliveryOption: DeliveryOption;
+    items?: DirectItemInput[];
   }
 ) {
   await connectDb();
-  const cart = await CartModel.findOne({ user: userId })
-    .populate("items.product")
-    .lean<CartLean>();
-  if (!cart || cart.items.length === 0) {
-    throw new Error("Cart is empty");
+
+  const normalizedDirectItems = (input.items ?? []).map((item) => ({
+    productId: item.productId,
+    quantity: Math.max(1, Math.floor(item.quantity)),
+  }));
+
+  if (normalizedDirectItems.some((item) => !Types.ObjectId.isValid(item.productId))) {
+    throw new Error("Selected product is unavailable");
   }
 
-  const subtotal = cart.items.reduce(
-    (sum, item) => sum + item.quantity * item.unitPrice,
-    0
-  );
+  let orderItems: OrderItemLean[] = [];
+  let subtotal = 0;
+  let cartIdToClear: Types.ObjectId | null = null;
 
-  const order = await OrderModel.create({
-    user: userId,
-    items: cart.items.map((item) => ({
+  if (normalizedDirectItems.length > 0) {
+    const productIds = normalizedDirectItems.map((item) => new Types.ObjectId(item.productId));
+    const products = await ProductModel.find({ _id: { $in: productIds }, status: "active" })
+      .lean<ProductLean[]>();
+
+    if (products.length === 0) {
+      throw new Error("Selected product is unavailable");
+    }
+
+    const productMap = new Map(products.map((product) => [product._id.toString(), product]));
+
+    orderItems = normalizedDirectItems.map((item) => {
+      const product = productMap.get(item.productId);
+      if (!product) {
+        throw new Error("Selected product is unavailable");
+      }
+      if (product.stock < item.quantity) {
+        throw new Error(`${product.name} is out of stock`);
+      }
+      return {
+        product: product._id,
+        name: product.name,
+        image: product.images?.[0] ?? "",
+        quantity: item.quantity,
+        unitPrice: product.price,
+      };
+    });
+
+    subtotal = orderItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+  } else {
+    const cart = await CartModel.findOne(ownerFilter(owner))
+      .populate("items.product")
+      .lean<CartLean>();
+    if (!cart || cart.items.length === 0) {
+      throw new Error("Cart is empty");
+    }
+
+    subtotal = cart.items.reduce(
+      (sum, item) => sum + item.quantity * item.unitPrice,
+      0
+    );
+
+    orderItems = cart.items.map((item) => ({
       product: item.product._id,
       name: item.product.name,
       image: item.product.images?.[0] ?? "",
       quantity: item.quantity,
       unitPrice: item.unitPrice,
-    })),
+    }));
+    cartIdToClear = cart._id;
+  }
+
+  const baseOwnerFields =
+    owner.kind === "user"
+      ? { user: owner.userId }
+      : { guestToken: owner.guestToken };
+
+  const order = await OrderModel.create({
+    ...baseOwnerFields,
+    items: orderItems,
     status: "pending",
     deliveryOption: input.deliveryOption,
     subtotal,
@@ -115,9 +189,12 @@ export async function createOrderFromCart(
     shippingAddress: input.shippingAddress,
   });
 
-  await CartModel.findByIdAndUpdate(cart._id, { items: [] });
+  if (cartIdToClear) {
+    await CartModel.findByIdAndUpdate(cartIdToClear, { items: [] });
+  }
 
-  return toSummary(order);
+  const leanOrder = order.toObject() as OrderLean;
+  return toSummary(leanOrder);
 }
 
 export async function listOrders(userId: string, role: string) {
@@ -170,7 +247,7 @@ export async function updateOrderStatus(orderId: string, status: string) {
 export async function updateOrderDeliveryOption(
   orderId: string,
   userId: string,
-  deliveryOption: string
+  deliveryOption: DeliveryOption
 ) {
   await connectDb();
   const order = await OrderModel.findOne({ _id: orderId, user: userId });
@@ -199,5 +276,6 @@ export async function cancelOrder(orderId: string, userId: string) {
   }
   order.status = "cancelled";
   await order.save();
-  return toSummary(order);
+  const leanOrder = order.toObject() as OrderLean;
+  return toSummary(leanOrder);
 }

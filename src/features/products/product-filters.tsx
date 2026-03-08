@@ -42,24 +42,25 @@ export function ProductFilters({ search, category, categories }: ProductFiltersP
 
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-end">
-      <label className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+      <label className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted font-english">
         Search
         <Input
           name="search"
-          placeholder="Search products"
+          placeholder="Type product or ingredient"
           value={searchValue}
           onChange={(event) => setSearchValue(event.target.value)}
+          className="font-english"
         />
       </label>
-      <label className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+      <label className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted font-english">
         Category
         <select
           name="category"
           value={categoryValue}
           onChange={(event) => setCategoryValue(event.target.value)}
-          className="rounded-full border border-border bg-surface-strong px-4 py-3 text-sm text-foreground"
+          className="rounded-full border border-border bg-surface-strong px-4 py-3 text-sm text-foreground font-english"
         >
-          <option value="">All categories</option>
+          <option value="">All Categories</option>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.name}>
               {cat.name}
@@ -69,13 +70,13 @@ export function ProductFilters({ search, category, categories }: ProductFiltersP
       </label>
       <button
         type="button"
-        className="rounded-full border border-border bg-surface-strong px-5 py-3 text-xs font-semibold uppercase tracking-[0.2em]"
+        className="rounded-full border border-border bg-surface-strong px-5 py-3 text-xs font-semibold uppercase tracking-[0.2em] font-english"
         onClick={() => {
           setSearchValue("");
           setCategoryValue("");
         }}
       >
-        Clear
+        Reset
       </button>
     </div>
   );

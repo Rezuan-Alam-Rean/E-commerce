@@ -10,14 +10,14 @@ export async function CategorySection() {
     <section className="mx-auto w-full max-w-6xl px-6 py-12">
       <SectionHeading
         label="Collections"
-        title="Categories with momentum"
-        description="Browse the categories your customers gravitate toward the most."
+        title="যে বিভাগগুলো সবচেয়ে বেশি বিক্রি হচ্ছে"
+        description="প্রিয় ভর্তা, মসলা ও ডেলি মেন্যুর বিভাগগুলো একনজরে দেখুন।"
       />
       <div className="mt-8">
         {categories.length === 0 ? (
           <EmptyState
-            title="No categories yet"
-            description="Add products to start seeing category insights."
+            title="No categories found"
+            description="Newly published products will automatically create categories here."
           />
         ) : (
           <div className="grid gap-6 md:grid-cols-3">
@@ -27,13 +27,13 @@ export async function CategorySection() {
                 href={`/products?category=${encodeURIComponent(category.name)}`}
                 className="flex flex-col gap-3 rounded-[var(--radius-lg)] border border-border bg-white p-6 transition hover:-translate-y-1"
               >
-                <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
-                  {category.count} products
+                <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted font-english">
+                  {category.count} items
                 </span>
                 <h3 className="text-lg font-semibold text-foreground">
                   {category.name}
                 </h3>
-                <span className="text-xs text-muted">Explore the collection</span>
+                <span className="text-xs text-muted font-english">Browse this category</span>
               </Link>
             ))}
           </div>

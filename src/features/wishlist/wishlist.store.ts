@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { api } from "@/lib/store/api";
+import { wishlistApi } from "@/lib/store/api/wishlist";
 import { wishlistActions } from "@/lib/store/slices/wishlist-slice";
 
 export function useWishlistStore() {
@@ -11,31 +11,19 @@ export function useWishlistStore() {
 
   const load = useCallback(async () => {
     const action = dispatch(
-      api.endpoints.getWishlist.initiate(undefined, {
-        subscribe: false,
+      wishlistApi.endpoints.getWishlist.initiate(undefined, {
         forceRefetch: true,
       }),
     );
-    try {
-      await action.unwrap();
-    } finally {
-      action.unsubscribe();
-    }
+    await action.unwrap();
   }, [dispatch]);
 
   const add = useCallback(
     async (productId: string) => {
       const action = dispatch(
-        api.endpoints.addWishlistItem.initiate(
-          { productId },
-          { subscribe: false },
-        ),
+        wishlistApi.endpoints.addWishlistItem.initiate({ productId }),
       );
-      try {
-        await action.unwrap();
-      } finally {
-        action.unsubscribe();
-      }
+      await action.unwrap();
     },
     [dispatch],
   );
@@ -43,16 +31,9 @@ export function useWishlistStore() {
   const remove = useCallback(
     async (productId: string) => {
       const action = dispatch(
-        api.endpoints.removeWishlistItem.initiate(
-          { productId },
-          { subscribe: false },
-        ),
+        wishlistApi.endpoints.removeWishlistItem.initiate({ productId }),
       );
-      try {
-        await action.unwrap();
-      } finally {
-        action.unsubscribe();
-      }
+      await action.unwrap();
     },
     [dispatch],
   );

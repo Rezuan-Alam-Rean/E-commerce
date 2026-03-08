@@ -1,5 +1,4 @@
 import { ProductDetail } from "@/features/products/product-detail";
-import { AuthGate } from "@/components/ui/auth-gate";
 
 export const dynamic = "force-dynamic";
 
@@ -10,8 +9,6 @@ export default async function ProductDetailPage({
 }) {
   const { id } = await params;
   return (
-    <AuthGate>
-      <ProductDetail id={id} />
-    </AuthGate>
+    <ProductDetail id={id} />
   );
 }

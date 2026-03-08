@@ -7,7 +7,7 @@ type SectionHeadingProps = {
 export function SectionHeading({ label, title, description }: SectionHeadingProps) {
   return (
     <div className="flex flex-col gap-3">
-      <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
+      <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted font-english">
         {label}
       </span>
       <div className="flex flex-col gap-2">

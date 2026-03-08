@@ -22,8 +22,8 @@
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
   --color-border: var(--border);
-  --font-sans: var(--font-jakarta);
-  --font-serif: var(--font-fraunces);
+  --font-sans: var(--font-bangla-sans);
+  --font-serif: var(--font-bangla-serif);
   --radius-lg: var(--radius-lg);
   --radius-md: var(--radius-md);
   --radius-sm: var(--radius-sm);
@@ -36,8 +36,13 @@
 body {
   background: var(--surface);
   color: var(--ink);
-  font-family: var(--font-jakarta), system-ui, sans-serif;
+  font-family: var(--font-bangla-sans), "Hind Siliguri", system-ui, sans-serif;
   letter-spacing: -0.01em;
+}
+
+.font-english {
+  font-family: var(--font-english-sans), "Space Grotesk", system-ui, sans-serif;
+  letter-spacing: 0.02em;
 }
 
 @layer base {

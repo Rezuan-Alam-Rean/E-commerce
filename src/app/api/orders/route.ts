@@ -1,7 +1,8 @@
 import { getAuthPayload } from "@/lib/auth";
 import { ok, fail } from "@/lib/response";
 import { createOrderSchema } from "@/lib/validators/order";
-import { createOrderFromCart, listOrdersPaginated } from "@/services/order.service";
+import { createOrder, listOrdersPaginated } from "@/services/order.service";
+import { resolveSessionOwner } from "@/lib/session-owner";
 
 export async function GET(req: Request) {
   const auth = await getAuthPayload();
@@ -19,10 +20,6 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   const auth = await getAuthPayload();
-  if (!auth) {
-    return fail("Unauthorized", 401);
-  }
-
   try {
     const json = await req.json();
     const parsed = createOrderSchema.safeParse(json);
@@ -31,7 +28,8 @@ export async function POST(req: Request) {
       return fail(message, 400);
     }
 
-    const order = await createOrderFromCart(auth.userId, parsed.data);
+    const owner = await resolveSessionOwner(auth?.userId);
+    const order = await createOrder(owner, parsed.data);
     return ok(order, 201);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Checkout failed";

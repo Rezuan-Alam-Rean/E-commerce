@@ -13,7 +13,7 @@ export default function UserDashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <DashboardShell title="Customer Dashboard" items={userItems} requiredRole="user">
+    <DashboardShell title="Customer Dashboard" items={userItems} requiredRole="user" allowAnonymous>
       {children}
     </DashboardShell>
   );

@@ -12,19 +12,19 @@ type Slide = {
 const staticSlides: Slide[] = [
   {
     id: "demo-1",
-    title: "Spring capsule collection",
+    title: "ঐতিহ্যবাহী ভর্তা প্লাটার",
     image:
       "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1600&q=80",
   },
   {
     id: "demo-2",
-    title: "Minimal essentials",
+    title: "মসলার গোপন রেসিপি",
     image:
       "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1600&q=80",
   },
   {
     id: "demo-3",
-    title: "Warm neutrals edit",
+    title: "ঘরোয়া সরিষার তেল ও আচারের ঝলক",
     image:
       "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1600&q=80",
   },
@@ -64,12 +64,12 @@ export function HomeSlider() {
         </div>
         <div className="absolute inset-y-0 left-0 flex w-full max-w-md flex-col justify-between gap-6 p-8 text-white">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/80">
-              Featured drop
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/80 font-english">
+              Special Selection
             </p>
-            <p className="mt-3 font-serif text-3xl">{current?.title ?? "Featured selection"}</p>
+            <p className="mt-3 font-serif text-3xl">{current?.title ?? "Top Picks of the Week"}</p>
             <p className="mt-4 text-sm text-white/80">
-              Curated essentials for elevated everyday routines.
+              বাছাইকৃত স্থানীয় স্বাদ, পরিবারিক আয়োজন ও উপহার দুইয়ের জন্যই উপযোগী।
             </p>
           </div>
           {slides.length > 1 ? (

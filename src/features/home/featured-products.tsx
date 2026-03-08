@@ -11,9 +11,9 @@ export function FeaturedProducts() {
   return (
     <section className="mx-auto w-full max-w-6xl px-6 py-12">
       <SectionHeading
-        label="Featured"
-        title="Premium picks for the spotlight"
-        description="Curated selections driving the highest conversions."
+        label="Featured Picks"
+        title="এই মুহূর্তের সেরা অফার"
+        description="যে প্যাকগুলো গ্রাহকেরা বারবার অর্ডার করছেন সেগুলো দেখুন।"
       />
       <div className="mt-8 space-y-6">
         {loading ? (
@@ -21,8 +21,8 @@ export function FeaturedProducts() {
         ) : (
           <ProductGrid
             products={products}
-            emptyTitle="No featured products"
-            emptyDescription="Mark products as featured to highlight them here."
+            emptyTitle="No featured products yet"
+            emptyDescription="Tag items as featured to automatically populate this grid."
           />
         )}
         <PaginationButtons page={page} totalPages={totalPages} onPageChange={setPage} />

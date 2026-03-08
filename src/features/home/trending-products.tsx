@@ -11,9 +11,9 @@ export function TrendingProducts() {
   return (
     <section className="mx-auto w-full max-w-6xl px-6 py-12">
       <SectionHeading
-        label="Trending"
-        title="Momentum-ready best sellers"
-        description="High-interest products trending across regions."
+        label="Trending Now"
+        title="সবার মুখে মুখে যে পণ্যগুলো"
+        description="ঢাকা, চট্টগ্রাম ও বরিশালে যেগুলো সবচেয়ে বেশি অর্ডার হচ্ছে সেগুলো এখানে।"
       />
       <div className="mt-8 space-y-6">
         {loading ? (
@@ -21,8 +21,8 @@ export function TrendingProducts() {
         ) : (
           <ProductGrid
             products={products}
-            emptyTitle="No trending products"
-            emptyDescription="Flag products as trending to feature them here."
+            emptyTitle="No trending products yet"
+            emptyDescription="Mark an item as trending to have it highlighted in this list."
           />
         )}
         <PaginationButtons page={page} totalPages={totalPages} onPageChange={setPage} />

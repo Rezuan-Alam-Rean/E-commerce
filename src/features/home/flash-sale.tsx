@@ -12,8 +12,8 @@ export function FlashSale() {
     <section className="mx-auto w-full max-w-6xl px-6 py-12">
       <SectionHeading
         label="Flash Sale"
-        title="Limited-time offers"
-        description="Create urgency with short-window promotional items."
+        title="সীমিত সময়ের অফার"
+        description="যে সব কম্বো প্যাক মাত্র কয়েকদিনের জন্য ছাড়ে চলছে সেগুলো দেখতে থাকুন।"
       />
       <div className="mt-8 space-y-6">
         {loading ? (
@@ -21,8 +21,8 @@ export function FlashSale() {
         ) : (
           <ProductGrid
             products={products}
-            emptyTitle="No flash sale products"
-            emptyDescription="Enable flash sale for products to show them here."
+            emptyTitle="No flash deals right now"
+            emptyDescription="As soon as a flash sale goes live, qualifying items will show up here."
           />
         )}
         <PaginationButtons page={page} totalPages={totalPages} onPageChange={setPage} />

@@ -14,7 +14,8 @@ const orderItemSchema = new Schema(
 
 const orderSchema = new Schema(
   {
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User" },
+    guestToken: { type: String },
     items: { type: [orderItemSchema], default: [] },
     status: { type: String, enum: ORDER_STATUS, default: "pending" },
     deliveryOption: { type: String, enum: DELIVERY_OPTIONS, default: "standard" },
@@ -28,9 +29,21 @@ const orderSchema = new Schema(
   { timestamps: true }
 );
 
-orderSchema.index({ user: 1, createdAt: -1 });
+orderSchema.index({ user: 1, createdAt: -1 }, { sparse: true });
+orderSchema.index({ guestToken: 1, createdAt: -1 }, { sparse: true });
+orderSchema.pre("validate", function ensureOwner(next) {
+  if (!this.user && !this.guestToken) {
+    next(new Error("Order owner is required"));
+    return;
+  }
+  next();
+});
 orderSchema.index({ status: 1 });
 
 export type OrderDocument = InferSchemaType<typeof orderSchema>;
 
-export const OrderModel = models.Order || model("Order", orderSchema);
+if (models.Order) {
+  delete models.Order;
+}
+
+export const OrderModel = model("Order", orderSchema);

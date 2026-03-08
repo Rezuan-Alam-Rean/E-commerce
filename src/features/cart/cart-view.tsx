@@ -18,8 +18,8 @@ export function CartView() {
   if (!cart || cart.items.length === 0) {
     return (
       <EmptyState
-        title="Your cart is empty"
-        description="Add products to start building your order."
+        title="আপনার কার্ট খালি"
+        description="পছন্দের পণ্য কার্টে যোগ করলেই এখানে দেখা যাবে।"
       />
     );
   }
@@ -58,7 +58,12 @@ export function CartView() {
               }
               className="w-20 rounded-full border border-border px-3 py-2 text-sm"
             />
-            <Button variant="ghost" type="button" onClick={() => removeItem(item.product.id)}>
+            <Button
+              variant="ghost"
+              type="button"
+              onClick={() => removeItem(item.product.id)}
+              className="font-english"
+            >
               Remove
             </Button>
           </div>
@@ -66,14 +71,14 @@ export function CartView() {
       ))}
       <div className="flex flex-col items-start justify-between gap-4 rounded-[var(--radius-lg)] bg-surface-strong p-6 md:flex-row md:items-center">
         <div>
-          <span className="text-sm font-semibold text-foreground">Total</span>
+          <span className="text-sm font-semibold text-foreground">মোট</span>
           <p className="text-sm font-semibold text-foreground">{formatCurrency(cart.total)}</p>
         </div>
         <Link
           href="/checkout"
-          className="rounded-full bg-accent px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-accent-strong"
+          className="rounded-full bg-accent px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-accent-strong font-english"
         >
-          Proceed to checkout
+          Go to Checkout
         </Link>
       </div>
     </div>

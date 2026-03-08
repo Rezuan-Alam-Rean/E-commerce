@@ -9,7 +9,7 @@ import { useWishlistStore } from "@/features/wishlist/wishlist.store";
 
 const navLinks = [
   { label: "Home", href: "/" },
-  { label: "Products", href: "/products" },
+  { label: "All Products", href: "/products" },
 ];
 
 export function SiteHeader() {
@@ -31,7 +31,7 @@ export function SiteHeader() {
   };
   const desktopNavClass = (href: string) => {
     const active = isActive(href);
-    const base = "inline-flex min-w-[120px] items-center justify-center rounded-full px-5 py-2 text-[11px] font-semibold uppercase leading-[1.2] tracking-[0.18em] transition";
+    const base = "inline-flex min-w-[120px] items-center justify-center rounded-full px-5 py-2 text-[11px] font-semibold uppercase leading-[1.2] tracking-[0.18em] transition font-english";
     return active
       ? `${base} bg-gradient-to-r from-[#0d111f] via-[#080a12] to-[#05060b] ring-1 ring-white/40 shadow-[0_15px_35px_rgba(5,6,11,0.35)]`
       : `${base} border border-border/70 bg-white/40 text-foreground/70 hover:border-foreground/30 hover:text-foreground`;
@@ -41,7 +41,7 @@ export function SiteHeader() {
     return active ? "text-white" : "text-foreground/70";
   };
   const drawerItemClass = (href?: string) => {
-    const base = "rounded-2xl border px-5 py-3 text-sm font-semibold uppercase tracking-[0.2em] shadow-[0_8px_24px_rgba(1,37,24,0.08)] transition";
+    const base = "rounded-2xl border px-5 py-3 text-sm font-semibold uppercase tracking-[0.2em] shadow-[0_8px_24px_rgba(1,37,24,0.08)] transition font-english";
     if (href && isActive(href)) {
       return `${base} border-foreground bg-foreground text-white`;
     }
@@ -53,21 +53,22 @@ export function SiteHeader() {
   }, [load]);
 
   useEffect(() => {
-    if (user?.role === "user") {
-      loadCart();
-      loadWishlist();
-    }
+    loadCart();
+    loadWishlist();
   }, [user, loadCart, loadWishlist]);
+
+  const cartCount = cart?.items.length ?? 0;
+  const wishlistCount = wishlist?.products.length ?? 0;
 
   return (
     <header className="sticky top-0 z-[80] border-b border-white/60 bg-white/90 backdrop-blur-xl shadow-[0_10px_40px_rgba(15,23,42,0.1)]">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-6 py-3 lg:py-4">
         <div className="flex flex-1 items-center gap-6">
-          <Link href="/" className="flex items-center gap-2 text-lg font-semibold tracking-[0.45em]">
-            AURELIA
+          <Link href="/" className="flex items-center gap-2 text-lg font-semibold tracking-[0.2em]">
+            স্বাদবাজার
           </Link>
           <span className="hidden text-[11px] font-semibold uppercase tracking-[0.5em] text-muted lg:inline-flex">
-            Dhaka Atelier
+            দেশজ স্বাদের ডেলিভারি
           </span>
           <nav className="hidden flex-1 items-center gap-3 md:flex">
             {navLinks.map((link) => {
@@ -90,7 +91,7 @@ export function SiteHeader() {
             type="button"
             aria-label="Open navigation menu"
             aria-expanded={open}
-            className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-white/90 px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-foreground shadow-[0_10px_25px_rgba(15,23,42,0.08)] md:hidden"
+            className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-white/90 px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-foreground shadow-[0_10px_25px_rgba(15,23,42,0.08)] md:hidden font-english"
             onClick={() => setOpen(true)}
           >
             <span>Menu</span>
@@ -103,12 +104,24 @@ export function SiteHeader() {
           <div className="hidden items-center gap-2 md:flex">
             {!user ? (
               <>
-                <Link href="/login" className="text-[11px] font-semibold uppercase tracking-[0.35em] text-muted transition hover:text-foreground">
+                <Link
+                  href="/cart"
+                  className="rounded-full border border-border/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-foreground transition hover:-translate-y-0.5 font-english"
+                >
+                  Cart ({cartCount})
+                </Link>
+                <Link
+                  href="/dashboard/wishlist"
+                  className="rounded-full border border-border/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-foreground transition hover:-translate-y-0.5 font-english"
+                >
+                  Wishlist ({wishlistCount})
+                </Link>
+                <Link href="/login" className="text-[11px] font-semibold uppercase tracking-[0.35em] text-muted transition hover:text-foreground font-english">
                   Login
                 </Link>
                 <Link
                   href="/register"
-                  className="rounded-full bg-foreground px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-white shadow-[0_18px_35px_rgba(15,23,42,0.25)] transition hover:-translate-y-0.5"
+                  className="rounded-full bg-foreground px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-white shadow-[0_18px_35px_rgba(15,23,42,0.25)] transition hover:-translate-y-0.5 font-english"
                 >
                   Register
                 </Link>
@@ -117,14 +130,14 @@ export function SiteHeader() {
               <>
                 <Link
                   href="/admin"
-                  className="rounded-full border border-border/70 px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-foreground transition hover:-translate-y-0.5"
+                  className="rounded-full border border-border/70 px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-foreground transition hover:-translate-y-0.5 font-english"
                 >
                   Admin Dashboard
                 </Link>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="text-[11px] font-semibold uppercase tracking-[0.35em] text-muted transition hover:text-foreground"
+                  className="text-[11px] font-semibold uppercase tracking-[0.35em] text-muted transition hover:text-foreground font-english"
                 >
                   Logout
                 </button>
@@ -133,26 +146,26 @@ export function SiteHeader() {
               <>
                 <Link
                   href="/dashboard"
-                  className="text-[11px] font-semibold uppercase tracking-[0.35em] text-muted transition hover:text-foreground"
+                  className="text-[11px] font-semibold uppercase tracking-[0.35em] text-muted transition hover:text-foreground font-english"
                 >
                   Dashboard
                 </Link>
                 <Link
                   href="/cart"
-                  className="rounded-full border border-border/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-foreground transition hover:-translate-y-0.5"
+                  className="rounded-full border border-border/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-foreground transition hover:-translate-y-0.5 font-english"
                 >
-                  Cart ({cart?.items.length ?? 0})
+                  Cart ({cartCount})
                 </Link>
                 <Link
                   href="/dashboard/wishlist"
-                  className="rounded-full border border-border/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-foreground transition hover:-translate-y-0.5"
+                  className="rounded-full border border-border/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-foreground transition hover:-translate-y-0.5 font-english"
                 >
-                  Wishlist ({wishlist?.products.length ?? 0})
+                  Wishlist ({wishlistCount})
                 </Link>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="text-[11px] font-semibold uppercase tracking-[0.35em] text-muted transition hover:text-foreground"
+                  className="text-[11px] font-semibold uppercase tracking-[0.35em] text-muted transition hover:text-foreground font-english"
                 >
                   Logout
                 </button>
@@ -168,12 +181,12 @@ export function SiteHeader() {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
+              <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted font-english">
                 Menu
               </span>
               <button
                 type="button"
-                className="text-xs font-semibold uppercase tracking-[0.2em]"
+                className="text-xs font-semibold uppercase tracking-[0.2em] font-english"
                 onClick={() => setOpen(false)}
               >
                 Close
@@ -194,6 +207,20 @@ export function SiteHeader() {
               ))}
               {!user ? (
                 <>
+                  <Link
+                    href="/cart"
+                    className={drawerItemClass("/cart")}
+                    onClick={() => setOpen(false)}
+                  >
+                    Cart ({cartCount})
+                  </Link>
+                  <Link
+                    href="/dashboard/wishlist"
+                    className={drawerItemClass("/dashboard/wishlist")}
+                    onClick={() => setOpen(false)}
+                  >
+                    Wishlist ({wishlistCount})
+                  </Link>
                   <Link
                     href="/login"
                     className={drawerItemClass()}

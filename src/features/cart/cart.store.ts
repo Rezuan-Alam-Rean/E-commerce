@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import type { DeliveryOption } from "@/lib/constants";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { api } from "@/lib/store/api";
+import { cartApi } from "@/lib/store/api/cart";
 import { cartActions } from "@/lib/store/slices/cart-slice";
 
 export function useCartStore() {
@@ -12,31 +12,19 @@ export function useCartStore() {
 
   const load = useCallback(async () => {
     const action = dispatch(
-      api.endpoints.getCart.initiate(undefined, {
-        subscribe: false,
+      cartApi.endpoints.getCart.initiate(undefined, {
         forceRefetch: true,
       }),
     );
-    try {
-      await action.unwrap();
-    } finally {
-      action.unsubscribe();
-    }
+    await action.unwrap();
   }, [dispatch]);
 
   const addItem = useCallback(
     async (productId: string, quantity: number) => {
       const action = dispatch(
-        api.endpoints.addCartItem.initiate(
-          { productId, quantity },
-          { subscribe: false },
-        ),
+        cartApi.endpoints.addCartItem.initiate({ productId, quantity }),
       );
-      try {
-        await action.unwrap();
-      } finally {
-        action.unsubscribe();
-      }
+      await action.unwrap();
     },
     [dispatch],
   );
@@ -44,16 +32,9 @@ export function useCartStore() {
   const updateItem = useCallback(
     async (productId: string, quantity: number) => {
       const action = dispatch(
-        api.endpoints.updateCartItem.initiate(
-          { productId, quantity },
-          { subscribe: false },
-        ),
+        cartApi.endpoints.updateCartItem.initiate({ productId, quantity }),
       );
-      try {
-        await action.unwrap();
-      } finally {
-        action.unsubscribe();
-      }
+      await action.unwrap();
     },
     [dispatch],
   );
@@ -61,16 +42,9 @@ export function useCartStore() {
   const removeItem = useCallback(
     async (productId: string) => {
       const action = dispatch(
-        api.endpoints.removeCartItem.initiate(
-          { productId },
-          { subscribe: false },
-        ),
+        cartApi.endpoints.removeCartItem.initiate({ productId }),
       );
-      try {
-        await action.unwrap();
-      } finally {
-        action.unsubscribe();
-      }
+      await action.unwrap();
     },
     [dispatch],
   );
@@ -78,16 +52,9 @@ export function useCartStore() {
   const updateDelivery = useCallback(
     async (deliveryOption: DeliveryOption) => {
       const action = dispatch(
-        api.endpoints.updateCartDelivery.initiate(
-          { deliveryOption },
-          { subscribe: false },
-        ),
+        cartApi.endpoints.updateCartDelivery.initiate({ deliveryOption }),
       );
-      try {
-        await action.unwrap();
-      } finally {
-        action.unsubscribe();
-      }
+      await action.unwrap();
     },
     [dispatch],
   );

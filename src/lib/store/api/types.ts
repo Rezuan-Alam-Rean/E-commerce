@@ -42,14 +42,15 @@ export type OrdersMutationPayload = {
   deliveryOption?: DeliveryOption;
 };
 
+export type CartItemPayload = { productId: string; quantity: number };
+
 export type CheckoutPayload = {
   shippingName: string;
   shippingPhone: string;
   shippingAddress: string;
   deliveryOption: DeliveryOption;
+  items?: CartItemPayload[];
 };
-
-export type CartItemPayload = { productId: string; quantity: number };
 export type CartDeliveryPayload = { deliveryOption: DeliveryOption };
 export type WishlistPayload = { productId: string };
 export type CategoryPayload = { name: string };

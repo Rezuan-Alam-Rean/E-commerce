@@ -4,7 +4,7 @@ import { api } from "./base";
 import { unwrap } from "./helpers";
 import type { LoginPayload, RegisterPayload, UpdateProfilePayload } from "./types";
 
-const authApi = api.injectEndpoints({
+export const authApi = api.injectEndpoints({
   endpoints: (build) => ({
     getProfile: build.query<UserProfile, void>({
       query: () => ({ url: "auth/profile" }),

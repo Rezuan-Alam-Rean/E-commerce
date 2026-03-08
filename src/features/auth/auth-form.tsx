@@ -54,13 +54,11 @@ export function AuthForm({ mode }: AuthFormProps) {
       push({ title: "Password too short", description: "Use at least 6 characters." });
       return;
     }
-    const payload =
-      mode === "register"
-        ? { name: form.name, email: form.email, password: form.password }
-        : { email: form.email, password: form.password };
     try {
-      const mutate = mode === "register" ? register : login;
-      const user = await mutate(payload).unwrap();
+      const user =
+        mode === "register"
+          ? await register({ name: form.name, email: form.email, password: form.password }).unwrap()
+          : await login({ email: form.email, password: form.password }).unwrap();
       push({ title: "Welcome back", description: "You are signed in." });
       if (user.role === "admin") {
         router.push("/admin");

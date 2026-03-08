@@ -45,15 +45,15 @@ export async function ProductListing({ searchParams }: { searchParams: SearchPar
     <section className="mx-auto w-full max-w-6xl px-6 py-12">
       <div className="flex flex-col gap-6">
         <SectionHeading
-          label="Products"
-          title="Explore the catalog"
-          description="Search, filter, and sort products across enterprise collections."
+          label="Our Catalog"
+          title="সম্পূর্ণ ক্যাটালগ ঘুরে দেখুন"
+          description="ভর্তা, আচার, রেডি মিল ও মসলা সহজেই খুঁজে বের করুন ও ফিল্টার করুন।"
         />
         <ProductFilters search={search} category={category} categories={categories} />
         <ProductGrid
           products={products.items}
-          emptyTitle="No products yet"
-          emptyDescription="Add products from the admin dashboard to populate the catalog."
+          emptyTitle="No products match the filters"
+          emptyDescription="Once admins add new inventory it will automatically appear in this catalog."
         />
         <PaginationLinks
           page={products.page}

@@ -17,9 +17,10 @@ type DashboardShellProps = {
   items: DashboardNavItem[];
   children: ReactNode;
   requiredRole?: "user" | "admin";
+  allowAnonymous?: boolean;
 };
 
-export function DashboardShell({ title, items, children, requiredRole }: DashboardShellProps) {
+export function DashboardShell({ title, items, children, requiredRole, allowAnonymous }: DashboardShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, loading, logout, load } = useAuth();
   const pathname = usePathname();
@@ -41,11 +42,15 @@ export function DashboardShell({ title, items, children, requiredRole }: Dashboa
   }, [load]);
 
   useEffect(() => {
-    if (ready && !loading && !user) {
-      const nextPath = pathname ?? "/dashboard";
-      router.replace(`/login?reason=auth&from=${encodeURIComponent(nextPath)}`);
+    if (!ready || loading || user) {
+      return;
     }
-  }, [user, loading, pathname, router, ready]);
+    if (allowAnonymous) {
+      return;
+    }
+    const nextPath = pathname ?? "/dashboard";
+    router.replace(`/login?reason=auth&from=${encodeURIComponent(nextPath)}`);
+  }, [user, loading, pathname, router, ready, allowAnonymous]);
 
   useEffect(() => {
     if (!ready || loading || !user || !requiredRole) {
@@ -63,6 +68,7 @@ export function DashboardShell({ title, items, children, requiredRole }: Dashboa
     await logout();
     resetCart();
     resetWishlist();
+    router.replace("/login");
   };
 
   const resolvedRoleLabel =
@@ -70,11 +76,30 @@ export function DashboardShell({ title, items, children, requiredRole }: Dashboa
       ? "Administrator"
       : user?.role === "user"
         ? "Customer"
-        : requiredRole === "admin"
-          ? "Administrator"
-          : requiredRole === "user"
-            ? "Customer"
-            : "Account";
+        : allowAnonymous
+          ? "Guest"
+          : requiredRole === "admin"
+            ? "Administrator"
+            : requiredRole === "user"
+              ? "Customer"
+              : "Account";
+
+  const guestActions = allowAnonymous ? (
+    <div className="flex flex-col gap-2 text-left">
+      <Link
+        href="/login"
+        className="rounded-2xl border border-border bg-white/80 px-3 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-[1px] hover:bg-white"
+      >
+        Login
+      </Link>
+      <Link
+        href="/register"
+        className="rounded-2xl border border-dashed border-border/70 px-3 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-[1px] hover:bg-white/70"
+      >
+        Register
+      </Link>
+    </div>
+  ) : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f3f5fb] via-white to-[#f3f5fb] md:pl-[18rem]">
@@ -105,13 +130,17 @@ export function DashboardShell({ title, items, children, requiredRole }: Dashboa
               ))}
             </nav>
           </div>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="rounded-2xl border border-border bg-white/80 px-3 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-[1px] hover:bg-white"
-          >
-            Logout
-          </button>
+          {user ? (
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="rounded-2xl border border-border bg-white/80 px-3 py-2 text-sm font-semibold text-foreground transition hover:-translate-y-[1px] hover:bg-white"
+            >
+              Logout
+            </button>
+          ) : (
+            guestActions
+          )}
         </div>
       </aside>
       <div className="px-4 py-6 md:px-8">
@@ -134,14 +163,28 @@ export function DashboardShell({ title, items, children, requiredRole }: Dashboa
                   {user ? <span className="text-sm text-muted">{user.email}</span> : null}
                 </div>
               </div>
-              <div className="flex gap-2 text-xs text-muted">
-                <span className="rounded-full bg-surface px-3 py-1">
-                  Active
-                </span>
-                <span className="rounded-full bg-surface px-3 py-1">
-                  {new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                </span>
-              </div>
+              {user ? (
+                <div className="flex gap-2 text-xs text-muted">
+                  <span className="rounded-full bg-surface px-3 py-1">
+                    Active
+                  </span>
+                  <span className="rounded-full bg-surface px-3 py-1">
+                    {new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  </span>
+                </div>
+              ) : allowAnonymous ? (
+                <div className="flex gap-2 text-xs text-muted">
+                  <span className="rounded-full bg-surface px-3 py-1">
+                    Guest Mode
+                  </span>
+                  <Link
+                    href="/login"
+                    className="rounded-full border border-border px-3 py-1 font-semibold text-foreground"
+                  >
+                    Login
+                  </Link>
+                </div>
+              ) : null}
             </div>
           </header>
           <section className="rounded-3xl border border-border/60 bg-white/95 p-6 shadow-[0_25px_65px_rgba(15,23,42,0.08)]">
@@ -180,13 +223,32 @@ export function DashboardShell({ title, items, children, requiredRole }: Dashboa
                   {item.label}
                 </Link>
               ))}
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="rounded-2xl border border-border bg-surface-strong px-4 py-2 text-sm font-semibold"
-              >
-                Logout
-              </button>
+              {user ? (
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="rounded-2xl border border-border bg-surface-strong px-4 py-2 text-sm font-semibold"
+                >
+                  Logout
+                </button>
+              ) : allowAnonymous ? (
+                <>
+                  <Link
+                    href="/login"
+                    className="rounded-2xl border border-dashed border-border bg-surface-strong px-4 py-2 text-sm font-semibold"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="rounded-2xl border border-border bg-surface-strong px-4 py-2 text-sm font-semibold"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Register
+                  </Link>
+                </>
+              ) : null}
             </nav>
           </aside>
         </div>

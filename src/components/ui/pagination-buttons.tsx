@@ -27,11 +27,11 @@ export function PaginationButtons({
   const isNextDisabled = page === totalPages || disabled;
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted">
+    <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted font-english">
       <span>
         {label ?? (
           <>
-            Page {page} of {totalPages}
+            Page {page} / {totalPages}
           </>
         )}
       </span>
@@ -42,7 +42,7 @@ export function PaginationButtons({
           onClick={() => onPageChange(prevPage)}
           disabled={isPrevDisabled}
         >
-          Prev
+          Previous
         </button>
         <button
           type="button"

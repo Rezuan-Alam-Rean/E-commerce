@@ -35,18 +35,18 @@ export async function ProductDetail({ id }: { id: string }) {
             ) : null}
           </div>
           <ProductActions productId={product.id} />
-          <div className="text-xs text-muted">
-            Stock available: {product.stock}
+          <div className="text-xs text-muted font-english">
+              Current Stock: {product.stock}
           </div>
         </div>
       </div>
       <div className="mt-12">
-        <h2 className="text-lg font-semibold text-foreground">Related products</h2>
+          <h2 className="text-lg font-semibold text-foreground font-english">Related Products</h2>
         <div className="mt-6">
           <ProductGrid
             products={related.items}
-            emptyTitle="No related products"
-            emptyDescription="This category is waiting for more products."
+              emptyTitle="No similar products yet"
+              emptyDescription="Add more items to this category to populate related suggestions."
           />
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { CartState } from "@/types/cart";
-import { api } from "../api";
+import { cartApi } from "../api/cart";
 
 export type CartSliceState = {
   cart: CartState | null;
@@ -20,55 +20,55 @@ const cartSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addMatcher(api.endpoints.getCart.matchPending, (state) => {
+      .addMatcher(cartApi.endpoints.getCart.matchPending, (state) => {
         state.loading = true;
       })
-      .addMatcher(api.endpoints.getCart.matchFulfilled, (state, { payload }) => {
+      .addMatcher(cartApi.endpoints.getCart.matchFulfilled, (state, { payload }) => {
         state.cart = payload;
         state.loading = false;
       })
-      .addMatcher(api.endpoints.getCart.matchRejected, (state) => {
+      .addMatcher(cartApi.endpoints.getCart.matchRejected, (state) => {
         state.cart = null;
         state.loading = false;
       })
-      .addMatcher(api.endpoints.addCartItem.matchPending, (state) => {
+      .addMatcher(cartApi.endpoints.addCartItem.matchPending, (state) => {
         state.loading = true;
       })
-      .addMatcher(api.endpoints.addCartItem.matchFulfilled, (state, { payload }) => {
+      .addMatcher(cartApi.endpoints.addCartItem.matchFulfilled, (state, { payload }) => {
         state.cart = payload;
         state.loading = false;
       })
-      .addMatcher(api.endpoints.addCartItem.matchRejected, (state) => {
+      .addMatcher(cartApi.endpoints.addCartItem.matchRejected, (state) => {
         state.loading = false;
       })
-      .addMatcher(api.endpoints.updateCartItem.matchPending, (state) => {
+      .addMatcher(cartApi.endpoints.updateCartItem.matchPending, (state) => {
         state.loading = true;
       })
-      .addMatcher(api.endpoints.updateCartItem.matchFulfilled, (state, { payload }) => {
+      .addMatcher(cartApi.endpoints.updateCartItem.matchFulfilled, (state, { payload }) => {
         state.cart = payload;
         state.loading = false;
       })
-      .addMatcher(api.endpoints.updateCartItem.matchRejected, (state) => {
+      .addMatcher(cartApi.endpoints.updateCartItem.matchRejected, (state) => {
         state.loading = false;
       })
-      .addMatcher(api.endpoints.removeCartItem.matchPending, (state) => {
+      .addMatcher(cartApi.endpoints.removeCartItem.matchPending, (state) => {
         state.loading = true;
       })
-      .addMatcher(api.endpoints.removeCartItem.matchFulfilled, (state, { payload }) => {
+      .addMatcher(cartApi.endpoints.removeCartItem.matchFulfilled, (state, { payload }) => {
         state.cart = payload;
         state.loading = false;
       })
-      .addMatcher(api.endpoints.removeCartItem.matchRejected, (state) => {
+      .addMatcher(cartApi.endpoints.removeCartItem.matchRejected, (state) => {
         state.loading = false;
       })
-      .addMatcher(api.endpoints.updateCartDelivery.matchPending, (state) => {
+      .addMatcher(cartApi.endpoints.updateCartDelivery.matchPending, (state) => {
         state.loading = true;
       })
-      .addMatcher(api.endpoints.updateCartDelivery.matchFulfilled, (state, { payload }) => {
+      .addMatcher(cartApi.endpoints.updateCartDelivery.matchFulfilled, (state, { payload }) => {
         state.cart = payload;
         state.loading = false;
       })
-      .addMatcher(api.endpoints.updateCartDelivery.matchRejected, (state) => {
+      .addMatcher(cartApi.endpoints.updateCartDelivery.matchRejected, (state) => {
         state.loading = false;
       });
   },

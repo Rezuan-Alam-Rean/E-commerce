@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -14,6 +15,8 @@ import {
   useCancelOrderMutation,
   useUpdateOrderMutation,
 } from "@/lib/store/api";
+import type { DeliveryOption } from "@/lib/constants";
+import { useAuth } from "@/hooks/use-auth";
 
 const resolveErrorMessage = (error: unknown) => {
   if (typeof error === "object" && error && "data" in error) {
@@ -33,6 +36,7 @@ const resolveErrorMessage = (error: unknown) => {
 
 export function OrdersView() {
   const { push } = useToast();
+  const { user, loading: authLoading } = useAuth();
   const [orders, setOrders] = useState<OrderSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -75,11 +79,16 @@ export function OrdersView() {
   );
 
   useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      setOrders([]);
+      return;
+    }
     const timer = setTimeout(() => {
       void load();
     }, 0);
     return () => clearTimeout(timer);
-  }, [load]);
+  }, [user, load]);
 
   const cancelOrder = async (orderId: string) => {
     try {
@@ -91,7 +100,7 @@ export function OrdersView() {
     }
   };
 
-  const updateDelivery = async (orderId: string, option: string) => {
+  const updateDelivery = async (orderId: string, option: DeliveryOption) => {
     try {
       await updateOrderMutation({ id: orderId, body: { deliveryOption: option } }).unwrap();
       push({ title: "Delivery updated" });
@@ -108,6 +117,31 @@ export function OrdersView() {
     setLoading(true);
     void fetchOrders(nextPage).finally(() => setLoading(false));
   };
+
+  if (!user && !authLoading) {
+    return (
+      <div className="rounded-[var(--radius-lg)] border border-dashed border-border bg-surface-strong p-8 text-center">
+        <h2 className="text-xl font-semibold text-foreground">Please login to view your orders</h2>
+        <p className="mt-2 text-sm text-muted">
+          Sign in or create an account to track your deliveries and view past purchases.
+        </p>
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            href="/login"
+            className="rounded-full bg-foreground px-6 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white font-english"
+          >
+            Login
+          </Link>
+          <Link
+            href="/register"
+            className="rounded-full border border-border px-6 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-foreground font-english"
+          >
+            Register
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return <p className="text-sm text-muted">Loading orders...</p>;
@@ -135,8 +169,10 @@ export function OrdersView() {
               <select
                 className="rounded-full border border-border bg-surface-strong px-3 py-2 text-xs"
                 disabled={order.status !== "pending"}
-                defaultValue={order.deliveryOption}
-                onChange={(event) => updateDelivery(order.id, event.target.value)}
+                defaultValue={order.deliveryOption ?? "standard"}
+                onChange={(event) =>
+                  updateDelivery(order.id, event.target.value as DeliveryOption)
+                }
               >
                 <option value="standard">Standard</option>
                 <option value="express">Express</option>

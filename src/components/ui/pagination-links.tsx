@@ -21,20 +21,20 @@ export function PaginationLinks({ page, totalPages, makeHref, label }: Paginatio
   const pillClass = "rounded-full border border-border px-4 py-2 font-semibold uppercase tracking-[0.2em] transition";
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted">
+    <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted font-english">
       <span>
         {label ?? (
           <>
-            Page {page} of {totalPages}
+            Page {page} / {totalPages}
           </>
         )}
       </span>
       <div className="flex gap-2">
         {prevDisabled ? (
-          <span className={`${pillClass} opacity-40`}>Prev</span>
+          <span className={`${pillClass} opacity-40`}>Previous</span>
         ) : (
           <Link href={makeHref(prevPage)} className={pillClass}>
-            Prev
+            Previous
           </Link>
         )}
         {nextDisabled ? (

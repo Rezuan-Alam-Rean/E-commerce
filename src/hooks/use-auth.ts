@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { api } from "@/lib/store/api";
+import { authApi } from "@/lib/store/api/auth";
 import { authActions } from "@/lib/store/slices/auth-slice";
 
 export function useAuth() {
@@ -11,29 +11,16 @@ export function useAuth() {
 
   const load = useCallback(async () => {
     const action = dispatch(
-      api.endpoints.getProfile.initiate(undefined, {
-        subscribe: false,
+      authApi.endpoints.getProfile.initiate(undefined, {
         forceRefetch: true,
       }),
     );
-    try {
-      await action.unwrap();
-    } finally {
-      action.unsubscribe();
-    }
+    await action.unwrap();
   }, [dispatch]);
 
   const logout = useCallback(async () => {
-    const action = dispatch(
-      api.endpoints.logout.initiate(undefined, {
-        subscribe: false,
-      }),
-    );
-    try {
-      await action.unwrap();
-    } finally {
-      action.unsubscribe();
-    }
+    const action = dispatch(authApi.endpoints.logout.initiate(undefined));
+    await action.unwrap();
     dispatch(authActions.resetAuth());
   }, [dispatch]);
 

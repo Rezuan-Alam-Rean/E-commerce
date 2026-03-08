@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { UserProfile } from "@/types/user";
-import { api } from "../api";
+import { authApi } from "../api/auth";
 
 export type AuthSliceState = {
   user: UserProfile | null;
@@ -20,42 +20,42 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addMatcher(api.endpoints.getProfile.matchPending, (state) => {
+      .addMatcher(authApi.endpoints.getProfile.matchPending, (state) => {
         state.loading = true;
       })
-      .addMatcher(api.endpoints.getProfile.matchFulfilled, (state, { payload }) => {
+      .addMatcher(authApi.endpoints.getProfile.matchFulfilled, (state, { payload }) => {
         state.user = payload;
         state.loading = false;
       })
-      .addMatcher(api.endpoints.getProfile.matchRejected, (state) => {
+      .addMatcher(authApi.endpoints.getProfile.matchRejected, (state) => {
         state.user = null;
         state.loading = false;
       })
-      .addMatcher(api.endpoints.login.matchPending, (state) => {
+      .addMatcher(authApi.endpoints.login.matchPending, (state) => {
         state.loading = true;
       })
-      .addMatcher(api.endpoints.login.matchFulfilled, (state, { payload }) => {
+      .addMatcher(authApi.endpoints.login.matchFulfilled, (state, { payload }) => {
         state.user = payload;
         state.loading = false;
       })
-      .addMatcher(api.endpoints.login.matchRejected, (state) => {
+      .addMatcher(authApi.endpoints.login.matchRejected, (state) => {
         state.loading = false;
       })
-      .addMatcher(api.endpoints.register.matchPending, (state) => {
+      .addMatcher(authApi.endpoints.register.matchPending, (state) => {
         state.loading = true;
       })
-      .addMatcher(api.endpoints.register.matchFulfilled, (state, { payload }) => {
+      .addMatcher(authApi.endpoints.register.matchFulfilled, (state, { payload }) => {
         state.user = payload;
         state.loading = false;
       })
-      .addMatcher(api.endpoints.register.matchRejected, (state) => {
+      .addMatcher(authApi.endpoints.register.matchRejected, (state) => {
         state.loading = false;
       })
-      .addMatcher(api.endpoints.logout.matchFulfilled, (state) => {
+      .addMatcher(authApi.endpoints.logout.matchFulfilled, (state) => {
         state.user = null;
         state.loading = false;
       })
-      .addMatcher(api.endpoints.updateProfile.matchFulfilled, (state, { payload }) => {
+      .addMatcher(authApi.endpoints.updateProfile.matchFulfilled, (state, { payload }) => {
         state.user = payload;
       });
   },

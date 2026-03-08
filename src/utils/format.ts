@@ -1,10 +1,11 @@
-const takaFormatter = new Intl.NumberFormat("en-BD", {
-  style: "currency",
-  currency: "BDT",
+const takaNumberFormatter = new Intl.NumberFormat("en-BD", {
+  style: "decimal",
+  minimumFractionDigits: 0,
   maximumFractionDigits: 2,
 });
 
 export function formatCurrency(value: number) {
-  const raw = takaFormatter.format(value);
-  return raw.replace(/\u09F3/g, "Tk").replace(/\u00A0/g, " ");
+  const safeValue = Number.isFinite(value) ? value : 0;
+  const digits = takaNumberFormatter.format(safeValue).replace(/\u00A0/g, " ");
+  return `৳ ${digits}`.replace(/\s+/g, " ").trim();
 }

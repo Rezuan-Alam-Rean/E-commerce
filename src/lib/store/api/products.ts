@@ -9,7 +9,7 @@ const productsApi = api.injectEndpoints({
     getProducts: build.query<PaginatedResult<ProductSummary>, ProductFilters | void>({
       query: (filters) => ({
         url: "products",
-        params: buildProductQueryParams(filters),
+        params: buildProductQueryParams(filters ?? undefined),
       }),
       transformResponse: (response: ApiResponse<PaginatedResult<ProductSummary>>) => unwrap(response),
       providesTags: ["Products"],

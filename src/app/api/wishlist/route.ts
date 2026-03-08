@@ -1,5 +1,6 @@
 import { getAuthPayload } from "@/lib/auth";
-import { ok, fail } from "@/lib/response";
+import { ok } from "@/lib/response";
+import { resolveSessionOwner } from "@/lib/session-owner";
 import { parseBody } from "@/lib/validation";
 import { z } from "zod";
 import { addToWishlist, getWishlistState, removeFromWishlist } from "@/services/wishlist.service";
@@ -10,32 +11,23 @@ const wishlistSchema = z.object({
 
 export async function GET() {
   const auth = await getAuthPayload();
-  if (!auth) {
-    return fail("Unauthorized", 401);
-  }
-
-  const wishlist = await getWishlistState(auth.userId);
+  const owner = await resolveSessionOwner(auth?.userId);
+  const wishlist = await getWishlistState(owner);
   return ok(wishlist);
 }
 
 export async function POST(req: Request) {
   const auth = await getAuthPayload();
-  if (!auth) {
-    return fail("Unauthorized", 401);
-  }
-
+  const owner = await resolveSessionOwner(auth?.userId);
   const body = await parseBody(req, wishlistSchema);
-  const wishlist = await addToWishlist(auth.userId, body.productId);
+  const wishlist = await addToWishlist(owner, body.productId);
   return ok(wishlist, 201);
 }
 
 export async function DELETE(req: Request) {
   const auth = await getAuthPayload();
-  if (!auth) {
-    return fail("Unauthorized", 401);
-  }
-
+  const owner = await resolveSessionOwner(auth?.userId);
   const body = await parseBody(req, wishlistSchema);
-  const wishlist = await removeFromWishlist(auth.userId, body.productId);
+  const wishlist = await removeFromWishlist(owner, body.productId);
   return ok(wishlist);
 }

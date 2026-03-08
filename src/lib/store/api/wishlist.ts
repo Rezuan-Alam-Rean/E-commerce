@@ -4,7 +4,7 @@ import { api } from "./base";
 import { unwrap } from "./helpers";
 import type { WishlistPayload } from "./types";
 
-const wishlistApi = api.injectEndpoints({
+export const wishlistApi = api.injectEndpoints({
   endpoints: (build) => ({
     getWishlist: build.query<WishlistState, void>({
       query: () => ({ url: "wishlist" }),

@@ -3,6 +3,7 @@ import { connectDb } from "@/lib/db";
 import { WishlistModel } from "@/models/wishlist";
 import type { ProductSummary } from "@/types/product";
 import type { WishlistState } from "@/types/wishlist";
+import type { SessionOwner } from "@/types/session";
 
 type ProductLean = {
   _id: Types.ObjectId;
@@ -54,14 +55,20 @@ async function mapWishlist(wishlist: WishlistLean | null): Promise<WishlistState
   };
 }
 
-export async function getWishlistState(userId: string) {
+const ownerFilter = (owner: SessionOwner) =>
+  owner.kind === "user" ? { user: owner.userId } : { guestToken: owner.guestToken };
+
+const ownerFields = (owner: SessionOwner) =>
+  owner.kind === "user" ? { user: owner.userId } : { guestToken: owner.guestToken };
+
+export async function getWishlistState(owner: SessionOwner) {
   await connectDb();
-  let wishlist = await WishlistModel.findOne({ user: userId })
+  let wishlist = await WishlistModel.findOne(ownerFilter(owner))
     .populate("products")
     .lean<WishlistLean>();
   if (!wishlist) {
-    await WishlistModel.create({ user: userId, products: [] });
-    wishlist = await WishlistModel.findOne({ user: userId })
+    await WishlistModel.create({ ...ownerFields(owner), products: [] });
+    wishlist = await WishlistModel.findOne(ownerFilter(owner))
       .populate("products")
       .lean<WishlistLean>();
   }
@@ -69,22 +76,25 @@ export async function getWishlistState(userId: string) {
   return mapWishlist(wishlist ?? null);
 }
 
-export async function addToWishlist(userId: string, productId: string) {
+export async function addToWishlist(owner: SessionOwner, productId: string) {
   await connectDb();
   const wishlist = await WishlistModel.findOneAndUpdate(
-    { user: userId },
-    { $addToSet: { products: productId } },
-    { new: true, upsert: true }
+    ownerFilter(owner),
+    {
+      $addToSet: { products: productId },
+      $setOnInsert: ownerFields(owner),
+    },
+    { new: true, upsert: true, setDefaultsOnInsert: true }
   )
     .populate("products")
     .lean<WishlistLean>();
   return mapWishlist(wishlist ?? null);
 }
 
-export async function removeFromWishlist(userId: string, productId: string) {
+export async function removeFromWishlist(owner: SessionOwner, productId: string) {
   await connectDb();
   const wishlist = await WishlistModel.findOneAndUpdate(
-    { user: userId },
+    ownerFilter(owner),
     { $pull: { products: productId } },
     { new: true }
   )

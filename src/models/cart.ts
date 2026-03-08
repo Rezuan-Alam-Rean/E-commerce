@@ -12,15 +12,29 @@ const cartItemSchema = new Schema(
 
 const cartSchema = new Schema(
   {
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User" },
+    guestToken: { type: String },
     items: { type: [cartItemSchema], default: [] },
     deliveryOption: { type: String, enum: DELIVERY_OPTIONS, default: "standard" },
   },
   { timestamps: true }
 );
 
-cartSchema.index({ user: 1 }, { unique: true });
+cartSchema.index({ user: 1 }, { unique: true, sparse: true });
+cartSchema.index({ guestToken: 1 }, { unique: true, sparse: true });
+
+cartSchema.pre("validate", function ensureOwner(next) {
+  if (!this.user && !this.guestToken) {
+    next(new Error("Cart owner is required"));
+    return;
+  }
+  next();
+});
 
 export type CartDocument = InferSchemaType<typeof cartSchema>;
 
-export const CartModel = models.Cart || model("Cart", cartSchema);
+if (models.Cart) {
+  delete models.Cart;
+}
+
+export const CartModel = model("Cart", cartSchema);

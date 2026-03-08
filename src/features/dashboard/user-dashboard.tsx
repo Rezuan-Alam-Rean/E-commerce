@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getAuthPayload } from "@/lib/auth";
 import { listOrders } from "@/services/order.service";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -6,7 +7,28 @@ import { formatCurrency } from "@/utils/format";
 export async function UserDashboard() {
   const auth = await getAuthPayload();
   if (!auth) {
-    return null;
+    return (
+      <div className="flex flex-col items-center gap-4 rounded-[var(--radius-lg)] border border-dashed border-border bg-surface-strong p-8 text-center">
+        <h2 className="text-2xl font-semibold text-foreground">সারাংশ দেখতে সাইন ইন করুন</h2>
+        <p className="text-sm text-muted">
+          আপনার অর্ডারের অগ্রগতি, ব্যয় এবং সাম্প্রতিক আপডেট শুধুমাত্র লগইন করা গ্রাহকদের জন্য উপলব্ধ।
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Link
+            href="/login"
+            className="rounded-full bg-foreground px-6 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white font-english"
+          >
+            Login
+          </Link>
+          <Link
+            href="/register"
+            className="rounded-full border border-border px-6 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-foreground font-english"
+          >
+            Register
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   const orders = await listOrders(auth.userId, auth.role);

@@ -25,12 +25,12 @@ export function ProductCard({ product }: ProductCardProps) {
             unoptimized
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-xs uppercase tracking-[0.3em] text-muted">
+          <div className="flex h-full items-center justify-center text-xs uppercase tracking-[0.3em] text-muted font-english">
             No Image
           </div>
         )}
         {isOutOfStock ? (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 text-xs font-semibold uppercase tracking-[0.3em] text-white">
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 text-xs font-semibold uppercase tracking-[0.3em] text-white font-english">
             Out of Stock
           </div>
         ) : null}
@@ -46,7 +46,7 @@ export function ProductCard({ product }: ProductCardProps) {
           ) : null}
         </div>
         {isOutOfStock ? (
-          <span className="text-xs font-semibold uppercase tracking-[0.3em] text-red-500">
+          <span className="text-xs font-semibold uppercase tracking-[0.3em] text-red-500 font-english">
             Out of Stock
           </span>
         ) : null}
