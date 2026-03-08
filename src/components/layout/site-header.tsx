@@ -65,10 +65,10 @@ export function SiteHeader() {
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-6 py-3 lg:py-4">
         <div className="flex flex-1 items-center gap-6">
           <Link href="/" className="flex items-center gap-2 text-lg font-semibold tracking-[0.2em]">
-            স্বাদবাজার
+            স্টাইলঘর
           </Link>
           <span className="hidden text-[11px] font-semibold uppercase tracking-[0.5em] text-muted lg:inline-flex">
-            দেশজ স্বাদের ডেলিভারি
+            ফ্যাশন ফর দ্য ফ্যামিলি
           </span>
           <nav className="hidden flex-1 items-center gap-3 md:flex">
             {navLinks.map((link) => {
