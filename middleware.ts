@@ -11,20 +11,18 @@ async function verify(token: string) {
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const isProductDetail = pathname.startsWith("/products/") && pathname !== "/products";
-  const isCheckout = pathname.startsWith("/checkout");
+  const isDashboardRoute = pathname.startsWith("/dashboard");
+  const isAdminRoute = pathname.startsWith("/admin");
 
-  if (
-    !pathname.startsWith("/dashboard") &&
-    !pathname.startsWith("/admin") &&
-    !isCheckout &&
-    !isProductDetail
-  ) {
+  if (!isDashboardRoute && !isAdminRoute) {
     return NextResponse.next();
   }
 
   const token = req.cookies.get(COOKIE_NAME)?.value;
   if (!token) {
+    if (!isAdminRoute) {
+      return NextResponse.next();
+    }
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("reason", "auth");
     loginUrl.searchParams.set("from", pathname);
@@ -33,14 +31,17 @@ export async function middleware(req: NextRequest) {
 
   try {
     const payload = await verify(token);
-    if (pathname.startsWith("/dashboard") && payload.role === "admin") {
+    if (isDashboardRoute && payload.role === "admin") {
       return NextResponse.redirect(new URL("/admin", req.url));
     }
-    if (pathname.startsWith("/admin") && payload.role !== "admin") {
+    if (isAdminRoute && payload.role !== "admin") {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
     return NextResponse.next();
   } catch {
+    if (!isAdminRoute) {
+      return NextResponse.next();
+    }
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("reason", "auth");
     loginUrl.searchParams.set("from", pathname);
@@ -49,5 +50,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*", "/checkout", "/products/:path*"],
+  matcher: ["/dashboard/:path*", "/admin/:path*"],
 };
