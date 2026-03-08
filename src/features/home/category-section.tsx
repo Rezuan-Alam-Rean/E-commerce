@@ -10,8 +10,8 @@ export async function CategorySection() {
     <section className="mx-auto w-full max-w-6xl px-6 py-12">
       <SectionHeading
         label="Collections"
-        title="যে বিভাগগুলো সবচেয়ে বেশি বিক্রি হচ্ছে"
-        description="প্রিয় ভর্তা, মসলা ও ডেলি মেন্যুর বিভাগগুলো একনজরে দেখুন।"
+        title="সব বিভাগ এক নজরে"
+        description="শপিংয়ের জন্য জনপ্রিয় পোশাক ও এক্সেসরিজ বিভাগের সেরা তালিকা থেকে বেছে নিন।"
       />
       <div className="mt-8">
         {categories.length === 0 ? (

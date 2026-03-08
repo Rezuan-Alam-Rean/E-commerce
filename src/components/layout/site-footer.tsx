@@ -41,10 +41,10 @@ export function SiteFooter() {
               SWADBAZAAR
             </p>
             <p className="text-2xl font-serif leading-snug">
-              দেশজ খাবার, মসলা ও রেডি মিল এখন বাসায় পৌঁছে যায়।
+              পুরো পরিবারের ক্যাজুয়াল থেকে উৎসবের পোশাক এক জায়গায়।
             </p>
             <p className="text-sm text-white/70">
-              hello@swadbazaar.com · +880 1300-000000
+              hello@swadbazaar.com · +880 1300-000000 · স্টাইল কেয়ার ১০টা-১০টা
             </p>
           </div>
           <div className="flex flex-1 flex-wrap gap-10 text-sm text-white/80">
