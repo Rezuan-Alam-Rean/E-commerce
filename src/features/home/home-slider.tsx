@@ -13,20 +13,19 @@ const staticSlides: Slide[] = [
   {
     id: "demo-1",
     title: "ফ্যামিলি ম্যাচিং সেট",
-    image:
-      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1600&q=80",
+    image:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1600&q=80",
   },
   {
     id: "demo-2",
     title: "কিডস ফেস্টিভ কালেকশন",
     image:
-      "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1600&q=80",
+    "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=1600&q=80",
   },
   {
     id: "demo-3",
     title: "বেবি কমফোর্ট এসেন্সিয়ালস",
     image:
-      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1496440737103-cd596325d314?auto=format&fit=crop&w=1600&q=80",
   },
 ];
 
