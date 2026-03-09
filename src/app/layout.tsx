@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Noto_Sans_Bengali, Noto_Serif_Bengali, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { MetaPixel } from "@/components/analytics/meta-pixel";
+import { MetaUserBridge } from "@/components/analytics/meta-user-bridge";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { ToastViewport } from "@/components/ui/toast";
@@ -38,7 +41,13 @@ export default function RootLayout({
   return (
     <html lang="bn">
       <body className={`${notoSansBangla.variable} ${notoSerifBangla.variable} ${spaceGrotesk.variable} antialiased`}>
+        <Suspense fallback={null}>
+          <MetaPixel />
+        </Suspense>
         <ReduxProvider>
+          <Suspense fallback={null}>
+            <MetaUserBridge />
+          </Suspense>
           <div className="flex min-h-screen flex-col">
             <SiteHeader />
             <main className="flex-1">{children}</main>

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { MetaProductView } from "@/components/analytics/meta-product-view";
 import { ProductGrid } from "@/components/products/product-grid";
 import { getProductByIdOrSlug, listProducts } from "@/services/product.service";
 import { ProductActions } from "@/features/products/product-actions";
@@ -17,6 +18,9 @@ export async function ProductDetail({ id }: { id: string }) {
 
   return (
     <section className="mx-auto w-full max-w-6xl px-6 py-12">
+      <MetaProductView
+        product={{ id: product.id, name: product.name, price: product.price, categories: product.categories }}
+      />
       <div className="grid gap-10 md:grid-cols-2">
         <ProductGallery images={product.images} name={product.name} />
         <div className="flex flex-col gap-5">
@@ -34,7 +38,15 @@ export async function ProductDetail({ id }: { id: string }) {
               </span>
             ) : null}
           </div>
-          <ProductActions productId={product.id} />
+          <ProductActions
+            product={{
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              categories: product.categories,
+              image: product.images?.[0],
+            }}
+          />
           <div className="text-xs text-muted font-english">
               Current Stock: {product.stock}
           </div>

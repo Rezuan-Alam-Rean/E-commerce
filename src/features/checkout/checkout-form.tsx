@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCreateOrderMutation, useGetProductQuery, type CheckoutPayload } from "@/lib/store/api";
 import type { DeliveryOption } from "@/lib/constants";
 import { formatCurrency } from "@/utils/format";
+import { trackMetaEvent } from "@/lib/analytics/meta-client";
 
 type CheckoutFormProps = {
   buyNowItem?: {
@@ -51,6 +52,8 @@ export function CheckoutForm({ buyNowItem }: CheckoutFormProps) {
     { value: "standard", label: "ঢাকা সিটির ভিতরে", fee: 60 },
     { value: "express", label: "ঢাকার বাইরে", fee: 100 },
   ];
+  const currency = "BDT";
+  const checkoutTrackedRef = useRef(false);
 
   useEffect(() => {
     if (!isDirectPurchase) {
@@ -129,7 +132,32 @@ export function CheckoutForm({ buyNowItem }: CheckoutFormProps) {
           },
         ];
       }
-      await createOrder(payload).unwrap();
+      const order = await createOrder(payload).unwrap();
+      const normalizedEmail = promoEmail.trim();
+      const normalizedPhone = form.shippingPhone.trim();
+      const purchaseDeliveryCategory = toMetaDeliveryCategory(order.deliveryOption);
+      trackMetaEvent(
+        "Purchase",
+        {
+          currency,
+          value: order.total,
+          order_id: order.id,
+          num_items: order.items.length,
+          contents: order.items.map((item) => ({
+            id: item.product.id,
+            quantity: item.quantity,
+            item_price: item.unitPrice,
+          })),
+          content_type: "product",
+          delivery_category: purchaseDeliveryCategory,
+        },
+        {
+          userData: {
+            em: normalizedEmail ? [normalizedEmail] : undefined,
+            ph: normalizedPhone ? [normalizedPhone] : undefined,
+          },
+        },
+      );
       push({ title: "Order confirmed", description: "Cash on delivery is scheduled." });
       router.push("/dashboard");
     } catch (error) {
@@ -148,7 +176,37 @@ export function CheckoutForm({ buyNowItem }: CheckoutFormProps) {
     ? shippingOptions.find((option) => option.value === deliveryOption)?.fee ?? 60
     : 0;
   const grandTotal = summaryItems.length ? subtotal + shippingCost : 0;
+  const summaryContents = useMemo(
+    () =>
+      summaryItems.map((item) => ({
+        id: item.id,
+        quantity: item.quantity,
+        item_price: item.unitPrice,
+      })),
+    [summaryItems],
+  );
+  const summarySignature = summaryContents.map((item) => `${item.id}:${item.quantity}`).join("|");
   const disableSubmit = placingOrder || summaryItems.length === 0 || (isDirectPurchase && (!directProduct || fetchingDirectProduct));
+  const metaDeliveryCategory = toMetaDeliveryCategory(deliveryOption);
+
+  useEffect(() => {
+    if (!summaryContents.length) {
+      checkoutTrackedRef.current = false;
+      return;
+    }
+    if (checkoutTrackedRef.current) {
+      return;
+    }
+    trackMetaEvent("InitiateCheckout", {
+      currency,
+      value: subtotal,
+      num_items: summaryItems.length,
+      contents: summaryContents,
+      content_type: "product",
+      delivery_category: metaDeliveryCategory,
+    });
+    checkoutTrackedRef.current = true;
+  }, [currency, metaDeliveryCategory, subtotal, summaryContents.length, summarySignature, summaryItems.length]);
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
@@ -284,4 +342,11 @@ export function CheckoutForm({ buyNowItem }: CheckoutFormProps) {
       </div>
     </form>
   );
+}
+
+function toMetaDeliveryCategory(option?: DeliveryOption) {
+  if (!option) {
+    return undefined;
+  }
+  return "home_delivery";
 }

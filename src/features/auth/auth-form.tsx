@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useLoginMutation, useRegisterMutation } from "@/lib/store/api";
+import { trackMetaEvent } from "@/lib/analytics/meta-client";
 
 type AuthFormProps = {
   mode: "login" | "register";
@@ -59,6 +60,18 @@ export function AuthForm({ mode }: AuthFormProps) {
         mode === "register"
           ? await register({ name: form.name, email: form.email, password: form.password }).unwrap()
           : await login({ email: form.email, password: form.password }).unwrap();
+      if (mode === "register") {
+        const normalizedEmail = form.email.trim().toLowerCase();
+        trackMetaEvent(
+          "CompleteRegistration",
+          undefined,
+          {
+            userData: {
+              em: normalizedEmail ? [normalizedEmail] : undefined,
+            },
+          },
+        );
+      }
       push({ title: "Welcome back", description: "You are signed in." });
       if (user.role === "admin") {
         router.push("/admin");
