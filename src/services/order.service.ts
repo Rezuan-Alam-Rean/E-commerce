@@ -239,12 +239,48 @@ export async function listOrdersPaginated(
 
 export async function updateOrderStatus(orderId: string, status: string) {
   await connectDb();
-  const order = await OrderModel.findByIdAndUpdate(
-    orderId,
-    { status },
-    { new: true }
-  ).lean<OrderLean>();
-  return order ? toSummary(order) : null;
+
+  // Find current order to check previous status
+  const order = await OrderModel.findById(orderId);
+  if (!order) return null;
+
+  const prevStatus = order.status;
+  const nextStatus = status;
+
+  if (prevStatus === nextStatus) {
+    return toSummary(order.toObject() as OrderLean);
+  }
+
+  // Stock logic: 
+  // Processed states: processing, shipped, delivered
+  // Non-processed states: pending, cancelled
+  const isProcessed = (s: string) => ["processing", "shipped", "delivered"].includes(s);
+
+  const wasProcessed = isProcessed(prevStatus);
+  const isNowProcessed = isProcessed(nextStatus);
+
+  // If moving from non-processed to processed -> Deduct Stock
+  if (!wasProcessed && isNowProcessed) {
+    for (const item of order.items) {
+      await ProductModel.findByIdAndUpdate(item.product, {
+        $inc: { stock: -item.quantity }
+      });
+    }
+  }
+
+  // If moving from processed to non-processed (e.g. cancelled) -> Restore Stock
+  if (wasProcessed && !isNowProcessed) {
+    for (const item of order.items) {
+      await ProductModel.findByIdAndUpdate(item.product, {
+        $inc: { stock: item.quantity }
+      });
+    }
+  }
+
+  order.status = status as any;
+  await order.save();
+
+  return toSummary(order.toObject() as OrderLean);
 }
 
 export async function updateOrderDeliveryOption(
@@ -274,11 +310,10 @@ export async function cancelOrder(orderId: string, userId: string) {
   if (!order) {
     return null;
   }
+  // User can only cancel pending orders
   if (order.status !== "pending") {
     throw new Error("Only pending orders can be cancelled");
   }
-  order.status = "cancelled";
-  await order.save();
-  const leanOrder = order.toObject() as OrderLean;
-  return toSummary(leanOrder);
+
+  return updateOrderStatus(orderId, "cancelled");
 }
