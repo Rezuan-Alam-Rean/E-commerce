@@ -6,27 +6,30 @@ export const dynamic = "force-dynamic";
 
 export default async function LoginPage() {
   return (
-    <section className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-6 py-16">
+    <section className="mx-auto flex w-full max-w-md flex-col justify-center min-h-[calc(100vh-80px)] gap-8 px-4 py-12 sm:py-20">
       <AuthRedirectModal />
-      <div className="rounded-[40px] border border-[#eadfca] bg-gradient-to-br from-[#fff8ef] via-white to-[#f2f8f5] p-10 shadow-[0_30px_80px_rgba(9,50,32,0.12)]">
-        <div className="space-y-3">
-          <span className="inline-flex items-center gap-2 rounded-full bg-[#0f5132]/10 px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-[#0f5132]">
-            Sign in
-          </span>
-          <h1 className="font-serif text-4xl text-foreground">Return to your Bangladesh storefront</h1>
-          <p className="text-sm text-muted">
-            Manage orders, wishlists, and delivery preferences with a single secure login.
-          </p>
-        </div>
-        <div className="mt-8">
-          <AuthForm mode="login" />
-        </div>
-        <div className="mt-8 rounded-2xl border border-white/60 bg-white/70 p-4 text-xs text-muted">
-          Need an account?{" "}
-          <Link href="/register" className="font-semibold text-foreground underline underline-offset-4">
-            Create one now
-          </Link>
-        </div>
+      <div className="flex flex-col gap-2 text-center mb-4">
+        <h1 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight font-english">
+          Retail Console
+        </h1>
+        <p className="text-sm font-medium text-gray-500 font-english leading-relaxed px-4">
+          Return to your private Bangladesh-first storefront and manage your orders.
+        </p>
+      </div>
+
+      <AuthForm mode="login" />
+
+      <div className="rounded-[2.5rem] border border-gray-100 bg-white/50 backdrop-blur-xl p-6 text-center shadow-sm">
+        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest font-english">
+          New to the platform?
+        </p>
+        <Link 
+          href="/register" 
+          className="mt-3 inline-flex items-center gap-2 text-sm font-black text-emerald-600 hover:text-emerald-700 transition-colors font-english group"
+        >
+          Create Member Account
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </Link>
       </div>
     </section>
   );

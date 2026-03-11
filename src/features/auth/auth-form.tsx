@@ -86,56 +86,78 @@ export function AuthForm({ mode }: AuthFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 rounded-[32px] border border-[#e0d6c8] bg-white/95 p-8 shadow-[0_25px_60px_rgba(15,40,30,0.12)]"
+      className="space-y-6 sm:space-y-8 rounded-[2.5rem] border border-gray-100 bg-white p-6 sm:p-10 shadow-[0_8px_40px_rgba(0,0,0,0.04)]"
     >
-      <div className="space-y-2 text-left">
-        <p className="text-xs font-semibold uppercase tracking-[0.35em] text-muted">
-          Secure access
-        </p>
-        <h2 className="text-3xl font-semibold text-foreground">
-          {mode === "register" ? "Create your commerce identity" : "Sign in to continue"}
+      <div className="space-y-2 text-center sm:text-left">
+        <div className="flex justify-center sm:justify-start">
+          <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 border border-emerald-100/50">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            Secure Access
+          </span>
+        </div>
+        <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight font-english">
+          {mode === "register" ? "Create Identity" : "Welcome Back"}
         </h2>
-        <p className="text-sm text-muted">
-          Manage orders, wishlists, and delivery preferences from a single dashboard.
+        <p className="text-sm text-gray-500 font-medium leading-relaxed max-w-xs mx-auto sm:mx-0">
+          {mode === "register" 
+            ? "Join the premium Bangladesh-first commerce network." 
+            : "Sign in to manage your orders and preferences."}
         </p>
       </div>
-      {mode === "register" ? (
-        <label className="flex flex-col gap-2 text-left">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-muted">Full name</span>
+
+      <div className="space-y-4 sm:space-y-5">
+        {mode === "register" ? (
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Full Name</label>
+            <Input
+              placeholder="E.g. Tanvir Alam"
+              value={form.name}
+              onChange={updateField("name")}
+              className="rounded-2xl border-gray-100 bg-gray-50/50 px-5 py-4 text-base font-medium transition-all focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500/50"
+              required
+            />
+          </div>
+        ) : null}
+
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Email Address</label>
           <Input
-            placeholder="Full name"
-            value={form.name}
-            onChange={updateField("name")}
-            className="rounded-2xl border border-[#d6cab4] bg-white px-4 py-3 text-base text-foreground shadow-sm focus:border-[#0f5132]"
+            type="email"
+            placeholder="you@email.com"
+            value={form.email}
+            onChange={updateField("email")}
+            className="rounded-2xl border-gray-100 bg-gray-50/50 px-5 py-4 text-base font-medium transition-all focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500/50"
             required
           />
-        </label>
-      ) : null}
-      <label className="flex flex-col gap-2 text-left">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-muted">Email</span>
-        <Input
-          type="email"
-          placeholder="you@email.com"
-          value={form.email}
-          onChange={updateField("email")}
-          className="rounded-2xl border border-[#d6cab4] bg-white px-4 py-3 text-base text-foreground shadow-sm focus:border-[#0f5132]"
-          required
-        />
-      </label>
-      <label className="flex flex-col gap-2 text-left">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-muted">Password</span>
-        <Input
-          type="password"
-          placeholder="Minimum 6 characters"
-          value={form.password}
-          onChange={updateField("password")}
-          className="rounded-2xl border border-[#d6cab4] bg-white px-4 py-3 text-base text-foreground shadow-sm focus:border-[#0f5132]"
-          required
-        />
-      </label>
-      <Button type="submit" disabled={loading} className="w-full rounded-[18px] py-3 shadow-lg">
-        {loading ? "Processing" : mode === "register" ? "Create account" : "Sign in"}
-      </Button>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Secure Password</label>
+          <Input
+            type="password"
+            placeholder="••••••••"
+            value={form.password}
+            onChange={updateField("password")}
+            className="rounded-2xl border-gray-100 bg-gray-50/50 px-5 py-4 text-base font-medium transition-all focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500/50"
+            required
+          />
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#0d111f] py-4 text-xs font-black uppercase tracking-[0.25em] text-white shadow-xl shadow-black/10 hover:bg-black hover:shadow-black/20 hover:-translate-y-0.5 transition-all active:scale-[0.98] disabled:opacity-70 disabled:pointer-events-none font-english"
+      >
+        {loading ? (
+          <span className="flex items-center gap-2">
+            <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
+            Processing...
+          </span>
+        ) : (
+          mode === "register" ? "Create Account" : "Sign In Now"
+        )}
+      </button>
     </form>
   );
 }
