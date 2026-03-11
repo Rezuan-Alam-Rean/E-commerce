@@ -9,8 +9,14 @@ const wishlistSchema = new Schema(
   { timestamps: true }
 );
 
-wishlistSchema.index({ user: 1 }, { unique: true, sparse: true });
-wishlistSchema.index({ guestToken: 1 }, { unique: true, sparse: true });
+wishlistSchema.index(
+  { user: 1 },
+  { unique: true, partialFilterExpression: { user: { $type: "objectId" } } }
+);
+wishlistSchema.index(
+  { guestToken: 1 },
+  { unique: true, partialFilterExpression: { guestToken: { $type: "string" } } }
+);
 
 wishlistSchema.pre("validate", function ensureOwner(next) {
   if (!this.user && !this.guestToken) {

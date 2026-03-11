@@ -51,6 +51,16 @@ export type CheckoutPayload = {
   deliveryOption: DeliveryOption;
   items?: CartItemPayload[];
 };
+export type CheckoutIntentPayload = {
+  shippingName: string;
+  shippingPhone: string;
+  shippingAddress: string;
+  promoEmail?: string;
+};
+export type CheckoutIntentQuery = {
+  page?: number;
+  limit?: number;
+};
 export type CartDeliveryPayload = { deliveryOption: DeliveryOption };
 export type WishlistPayload = { productId: string };
 export type CategoryPayload = { name: string };

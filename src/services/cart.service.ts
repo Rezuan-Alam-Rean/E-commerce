@@ -57,15 +57,18 @@ const ownerFields = (owner: SessionOwner) =>
 
 export async function getOrCreateCart(owner: SessionOwner) {
   await connectDb();
-  const filter = ownerFilter(owner);
-  const cart = await CartModel.findOne(filter)
+  const cart = await CartModel.findOneAndUpdate(
+    ownerFilter(owner),
+    { $setOnInsert: { ...ownerFields(owner), items: [], deliveryOption: "standard" } },
+    { new: true, upsert: true, setDefaultsOnInsert: true }
+  )
     .populate("items.product")
     .lean();
-  if (cart) {
-    return cart;
+  if (!cart) {
+    throw new Error("Cart not found");
   }
 
-  return CartModel.create({ ...ownerFields(owner), items: [] });
+  return cart;
 }
 
 export async function addCartItem(

@@ -45,9 +45,9 @@ export async function ProductListing({ searchParams }: { searchParams: SearchPar
     <section className="mx-auto w-full max-w-6xl px-6 py-12">
       <div className="flex flex-col gap-6">
         <SectionHeading
-          label="Our Catalog"
-          title="সম্পূর্ণ ক্যাটালগ ঘুরে দেখুন"
-          description="ভর্তা, আচার, রেডি মিল ও মসলা সহজেই খুঁজে বের করুন ও ফিল্টার করুন।"
+          label="Our Collection"
+          title="সম্পূর্ণ পোশাকের কালেকশন ঘুরে দেখুন"
+          description="শার্ট, টি-শার্ট, হুডি, জিন্স ও অন্যান্য ফ্যাশন আইটেম সহজেই খুঁজে বের করুন ও ফিল্টার করুন।"
         />
         <ProductFilters search={search} category={category} categories={categories} />
         <ProductGrid

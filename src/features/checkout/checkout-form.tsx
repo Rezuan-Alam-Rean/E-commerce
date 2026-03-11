@@ -7,7 +7,12 @@ import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { useCartStore } from "@/features/cart/cart.store";
 import { useToast } from "@/hooks/use-toast";
-import { useCreateOrderMutation, useGetProductQuery, type CheckoutPayload } from "@/lib/store/api";
+import {
+  useCreateOrderMutation,
+  useGetProductQuery,
+  useSaveCheckoutIntentMutation,
+  type CheckoutPayload,
+} from "@/lib/store/api";
 import type { DeliveryOption } from "@/lib/constants";
 import { formatCurrency } from "@/utils/format";
 import { trackMetaEvent } from "@/lib/analytics/meta-client";
@@ -31,6 +36,7 @@ export function CheckoutForm({ buyNowItem }: CheckoutFormProps) {
   const router = useRouter();
   const { cart, load } = useCartStore();
   const [createOrder, { isLoading: placingOrder }] = useCreateOrderMutation();
+  const [saveCheckoutIntent] = useSaveCheckoutIntentMutation();
   const { push } = useToast();
   const [form, setForm] = useState({
     shippingName: "",
@@ -54,12 +60,56 @@ export function CheckoutForm({ buyNowItem }: CheckoutFormProps) {
   ];
   const currency = "BDT";
   const checkoutTrackedRef = useRef(false);
+  const checkoutDraftSignatureRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!isDirectPurchase) {
       load();
     }
   }, [isDirectPurchase, load]);
+
+  useEffect(() => {
+    const shippingName = form.shippingName.trim();
+    const shippingPhone = form.shippingPhone.trim();
+    const shippingAddress = form.shippingAddress.trim();
+    const email = promoEmail.trim();
+
+    const ready =
+      shippingName.length >= 2 && shippingPhone.length >= 7 && shippingAddress.length >= 6;
+    if (!ready) {
+      return;
+    }
+
+    const payload = {
+      shippingName,
+      shippingPhone,
+      shippingAddress,
+      promoEmail: email.length ? email : undefined,
+    };
+    const signature = JSON.stringify(payload);
+    if (signature === checkoutDraftSignatureRef.current) {
+      return;
+    }
+
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      saveCheckoutIntent(payload)
+        .unwrap()
+        .then(() => {
+          if (!cancelled) {
+            checkoutDraftSignatureRef.current = signature;
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to store checkout draft", error);
+        });
+    }, 1200);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [form.shippingName, form.shippingPhone, form.shippingAddress, promoEmail, saveCheckoutIntent]);
 
   const summaryItems: SummaryItem[] = useMemo(() => {
     if (isDirectPurchase) {

@@ -20,8 +20,14 @@ const cartSchema = new Schema(
   { timestamps: true }
 );
 
-cartSchema.index({ user: 1 }, { unique: true, sparse: true });
-cartSchema.index({ guestToken: 1 }, { unique: true, sparse: true });
+cartSchema.index(
+  { user: 1 },
+  { unique: true, partialFilterExpression: { user: { $type: "objectId" } } }
+);
+cartSchema.index(
+  { guestToken: 1 },
+  { unique: true, partialFilterExpression: { guestToken: { $type: "string" } } }
+);
 
 cartSchema.pre("validate", function ensureOwner(next) {
   if (!this.user && !this.guestToken) {

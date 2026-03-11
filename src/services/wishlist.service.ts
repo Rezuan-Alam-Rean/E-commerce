@@ -63,15 +63,13 @@ const ownerFields = (owner: SessionOwner) =>
 
 export async function getWishlistState(owner: SessionOwner) {
   await connectDb();
-  let wishlist = await WishlistModel.findOne(ownerFilter(owner))
+  const wishlist = await WishlistModel.findOneAndUpdate(
+    ownerFilter(owner),
+    { $setOnInsert: { ...ownerFields(owner), products: [] } },
+    { new: true, upsert: true, setDefaultsOnInsert: true }
+  )
     .populate("products")
     .lean<WishlistLean>();
-  if (!wishlist) {
-    await WishlistModel.create({ ...ownerFields(owner), products: [] });
-    wishlist = await WishlistModel.findOne(ownerFilter(owner))
-      .populate("products")
-      .lean<WishlistLean>();
-  }
 
   return mapWishlist(wishlist ?? null);
 }

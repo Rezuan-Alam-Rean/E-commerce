@@ -6,6 +6,7 @@ const adminItems = [
   { label: "Manage Products", href: "/admin/products" },
   { label: "Categories", href: "/admin/categories" },
   { label: "Manage Orders", href: "/admin/orders" },
+  { label: "Checkout Drafts", href: "/admin/checkout-drafts" },
   { label: "Analytics", href: "/admin/analytics" },
 ];
 

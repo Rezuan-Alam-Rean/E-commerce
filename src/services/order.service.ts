@@ -3,6 +3,7 @@ import { connectDb } from "@/lib/db";
 import { OrderModel } from "@/models/order";
 import { CartModel } from "@/models/cart";
 import { ProductModel } from "@/models/product";
+import { clearCheckoutIntent } from "@/services/checkout-intent.service";
 import type { SessionOwner } from "@/types/session";
 import type { OrderSummary } from "@/types/order";
 import type { DeliveryOption } from "@/lib/constants";
@@ -192,6 +193,8 @@ export async function createOrder(
   if (cartIdToClear) {
     await CartModel.findByIdAndUpdate(cartIdToClear, { items: [] });
   }
+
+  await clearCheckoutIntent(owner);
 
   const leanOrder = order.toObject() as OrderLean;
   return toSummary(leanOrder);
