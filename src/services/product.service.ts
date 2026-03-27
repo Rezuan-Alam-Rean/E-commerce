@@ -138,12 +138,12 @@ export async function listProducts(filters: {
   };
 }
 
-export async function listTopCategories(limit = 6) {
+export async function listTopCategories(limit = 6): Promise<{ name: string; count: number; image: string | null }[]> {
   await connectDb();
-  const categories = await ProductModel.aggregate<{ _id: string; count: number }>([
+  const categories = await ProductModel.aggregate<{ _id: string; count: number; image: string | null }>([
     { $match: { status: "active" } },
     { $unwind: "$categories" },
-    { $group: { _id: "$categories", count: { $sum: 1 } } },
+    { $group: { _id: "$categories", count: { $sum: 1 }, image: { $first: { $arrayElemAt: ["$images", 0] } } } },
     { $sort: { count: -1 } },
     { $limit: limit },
   ]);
@@ -151,6 +151,7 @@ export async function listTopCategories(limit = 6) {
   return categories.map((category) => ({
     name: category._id,
     count: category.count,
+    image: category.image ?? null,
   }));
 }
 
