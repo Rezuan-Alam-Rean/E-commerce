@@ -4,6 +4,7 @@ export type ProductFormDraft = {
   name: string;
   description: string;
   price: string;
+  compareAtPrice: string;
   stock: string;
   categories: string[];
   tags: string[];
@@ -16,6 +17,7 @@ export const emptyDraft: ProductFormDraft = {
   name: "",
   description: "",
   price: "",
+  compareAtPrice: "",
   stock: "",
   categories: [],
   tags: [],
@@ -73,6 +75,7 @@ export const buildProductPayload = (
       name: draft.name.trim(),
       description,
       price: priceValue,
+      compareAtPrice: draft.compareAtPrice ? Number(draft.compareAtPrice) : undefined,
       stock: stockValue,
       images,
       categories: draft.categories,

@@ -52,6 +52,7 @@ export function ProductEditModal({ productId, categories, onClose, fetchProductD
           name: product.name,
           description: product.description ?? "",
           price: product.price.toFixed(2),
+          compareAtPrice: product.compareAtPrice?.toFixed(2) ?? "",
           stock: product.stock.toString(),
           categories: product.categories ?? [],
           tags: product.tags ?? [],
@@ -174,6 +175,10 @@ export function ProductEditModal({ productId, categories, onClose, fetchProductD
                 <label className={labelClass}>
                   Price (BDT)
                   <Input value={draft.price} inputMode="decimal" onChange={updateField("price")} className={fieldClass} />
+                </label>
+                <label className={labelClass}>
+                  Previous Price (Optional)
+                  <Input value={draft.compareAtPrice} inputMode="decimal" onChange={updateField("compareAtPrice")} className={fieldClass} />
                 </label>
                 <label className={labelClass}>
                   Stock Quantity

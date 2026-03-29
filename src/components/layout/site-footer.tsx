@@ -41,7 +41,7 @@ export function SiteFooter() {
         <div className="grid gap-12 lg:grid-cols-2 lg:items-center pb-16 border-b border-white/5">
           <div className="max-w-xl">
             <Link href="/" className="inline-block text-xl font-black tracking-[0.3em] font-english mb-6">
-              SWADBAZAAR
+              DigitalHaat
             </Link>
             <h2 className="text-2xl sm:text-3xl font-black leading-tight mb-5">
               পুরো পরিবারের ক্যাজুয়াল থেকে উৎসবের পোশাক এক জায়গায়।
@@ -119,8 +119,8 @@ export function SiteFooter() {
           <div className="col-span-1">
             <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 font-english mb-6">Get in Touch</h4>
             <div className="space-y-4">
-              <p className="text-sm text-gray-400 font-medium font-english">hello@swadbazaar.com</p>
-              <p className="text-sm text-gray-400 font-medium font-english">+880 1300-000000</p>
+              <p className="text-sm text-gray-400 font-medium font-english">hello@digitalhaat.com</p>
+              <p className="text-sm text-gray-400 font-medium font-english">01754886959</p>
               <p className="text-xs text-gray-500 leading-relaxed font-medium">
                 ঢাকা, বাংলাদেশ। স্টাইল কেয়ার প্রতিদিন সকাল ১০:০০ টা থেকে রাত ১০:০০ টা পর্যন্ত।
               </p>
@@ -131,7 +131,7 @@ export function SiteFooter() {
         {/* Bottom Bar */}
         <div className="py-8 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest font-english">
-            © {year} SwadBazaar. Built for the modern family.
+            © {year} DigitalHaat. Built for the modern family.
           </p>
           <div className="flex gap-8">
             <Link href="#" className="text-[10px] font-bold text-gray-600 hover:text-white transition-colors uppercase tracking-[0.2em] font-english">Privacy</Link>

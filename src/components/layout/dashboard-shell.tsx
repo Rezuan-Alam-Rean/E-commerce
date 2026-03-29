@@ -144,10 +144,10 @@ export function DashboardShell({ title, items, children, requiredRole, allowAnon
   ) : null;
 
   return (
-    <div className="min-h-screen bg-[#fafbfc] md:pl-[19rem] pt-24 md:pt-4">
+    <div className="min-h-screen bg-[#fafbfc] md:pl-[19rem] pt-24 md:pt-10">
       {/* Desktop Sidebar */}
       <aside className="hidden md:block">
-        <div className="fixed left-6 top-[104px] flex h-[calc(100vh-128px)] w-64 flex-col justify-between rounded-[2rem] border border-gray-200/60 bg-white/80 backdrop-blur-3xl px-5 py-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] z-40">
+        <div className="fixed left-6 top-[120px] flex h-[calc(100vh-144px)] w-64 flex-col justify-between rounded-[2rem] border border-gray-200/60 bg-white/80 backdrop-blur-3xl px-5 py-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] z-40">
           <div className="flex flex-col h-full">
             {/* Sidebar Header */}
             <div className="mb-10 pl-2">
@@ -203,7 +203,7 @@ export function DashboardShell({ title, items, children, requiredRole, allowAnon
         <div className="flex flex-col gap-5 lg:gap-8 pb-10">
 
           {/* Top Header Section - Sticky on Mobile */}
-          <header className="sticky top-4 md:static z-[80] flex flex-col md:row md:items-end justify-between gap-4 bg-white/70 backdrop-blur-2xl border border-gray-200/50 rounded-[2rem] p-5 sm:p-6 lg:px-8 lg:py-6 shadow-[0_8px_32px_rgb(0,0,0,0.04)]">
+          <header className="sticky top-4 md:static z-10 flex flex-col md:row md:items-end justify-between gap-4 bg-white/70 backdrop-blur-2xl border border-gray-200/50 rounded-[2rem] p-5 sm:p-6 lg:px-8 lg:py-6 shadow-[0_8px_32px_rgb(0,0,0,0.04)]">
             <div className="flex items-start gap-3 sm:gap-4">
               {/* Mobile Menu Toggle */}
               <button

@@ -125,6 +125,10 @@ export function ProductCreateSection({ categories, categoriesLoading, onCreate }
             <Input placeholder="e.g. 1299.00" inputMode="decimal" value={draft.price} onChange={updateField("price")} className={fieldClass} />
           </label>
           <label className={labelClass}>
+            Previous Price (Optional)
+            <Input placeholder="e.g. 1499.00" inputMode="decimal" value={draft.compareAtPrice} onChange={updateField("compareAtPrice")} className={fieldClass} />
+          </label>
+          <label className={labelClass}>
             Stock Quantity
             <Input placeholder="e.g. 50" inputMode="numeric" value={draft.stock} onChange={updateField("stock")} className={fieldClass} />
           </label>

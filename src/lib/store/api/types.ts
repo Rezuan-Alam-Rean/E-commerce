@@ -23,6 +23,7 @@ export type ProductMutationPayload = {
   name: string;
   description: string;
   price: number;
+  compareAtPrice?: number;
   stock: number;
   images: string[];
   categories: string[];

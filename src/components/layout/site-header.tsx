@@ -141,7 +141,7 @@ export function SiteHeader() {
               className="group flex flex-col items-start justify-center transition-transform active:scale-95"
             >
               <span className="text-2xl font-bold tracking-widest text-[#0d111f] font-english uppercase">
-                স্টাইলঘর
+                DigitalHaat
               </span>
               <span className="hidden md:block text-[9px] font-semibold tracking-[0.4em] text-gray-500 uppercase mt-0.5 group-hover:text-amber-600 transition-colors">
                 ফ্যাশন ফর দ্য ফ্যামিলি
@@ -279,7 +279,7 @@ export function SiteHeader() {
       >
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
            <span className="text-xl font-bold tracking-widest text-[#0d111f] font-english uppercase">
-              স্টাইলঘর
+              DigitalHaat
             </span>
           <button
             onClick={() => setOpen(false)}

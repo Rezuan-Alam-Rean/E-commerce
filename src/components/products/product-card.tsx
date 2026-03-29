@@ -105,29 +105,29 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.name}
           </h3>
 
-          <div className="flex items-center gap-2">
-            <span className="text-sm sm:text-lg font-black text-gray-900 font-english tabular-nums">
-              {formatCurrency(product.price)}
-            </span>
-            {!isOutOfStock && product.stock <= 10 && (
-              <span className="text-[9px] font-bold text-rose-500 uppercase tracking-tight bg-rose-50 px-1.5 py-0.5 rounded-md">
-                Only {product.stock} left
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <span className="text-xl sm:text-2xl font-black text-[#ff4d6d] font-english tabular-nums tracking-tight">
+                {formatCurrency(product.price)}
               </span>
+              {!isOutOfStock && product.stock <= 5 && (
+                <span className="text-[8px] font-black text-rose-500 uppercase tracking-widest bg-rose-50 px-2 py-0.5 rounded-full border border-rose-100">
+                  Only {product.stock}
+                </span>
+              )}
+            </div>
+
+            {product.compareAtPrice && product.compareAtPrice > product.price && (
+              <div className="flex items-center gap-2">
+                <span className="text-xs sm:text-sm text-gray-400 line-through font-english tabular-nums">
+                  {formatCurrency(product.compareAtPrice)}
+                </span>
+                <span className="text-xs sm:text-sm font-black text-teal-500 font-english">
+                  -{Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)}%
+                </span>
+              </div>
             )}
           </div>
-          <div className="flex flex-col items-end gap-1">
-            <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${isOutOfStock
-                ? "bg-rose-50 text-rose-500 border-rose-100"
-                : "bg-emerald-50 text-emerald-600 border-emerald-100"
-              }`}>
-              {isOutOfStock ? "Sold Out" : `${product.stock} In Stock`}
-            </span>
-          </div>
-          {product.compareAtPrice && (
-            <span className="text-[10px] sm:text-xs text-gray-300 line-through font-english tabular-nums pb-0.5">
-              {formatCurrency(product.compareAtPrice)}
-            </span>
-          )}
         </Link>
 
         {/* Mobile & Tablet Quick Actions (Stacked Buttons) */}

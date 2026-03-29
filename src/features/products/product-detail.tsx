@@ -60,19 +60,19 @@ export async function ProductDetail({ id }: { id: string }) {
             {product.name}
           </h1>
 
-          <div className="flex items-end gap-5 mb-10 pb-10 border-b border-gray-100">
+          <div className="flex items-start gap-5 mb-10 pb-10 border-b border-gray-100">
             <div className="flex flex-col">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-english mb-1">Price</span>
-              <span className="text-4xl font-black text-gray-900 font-english tabular-nums tracking-tight">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-english mb-1">Current Price</span>
+              <span className="text-5xl sm:text-6xl font-black text-[#ff4d6d] font-english tabular-nums tracking-tighter">
                 {formatCurrency(product.price)}
               </span>
             </div>
-            {product.compareAtPrice ? (
-              <div className="flex flex-col mb-1">
-                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest font-english mb-1">
-                  Save {formatCurrency(product.compareAtPrice - product.price)}
+            {product.compareAtPrice && product.compareAtPrice > product.price ? (
+              <div className="flex flex-col mt-4">
+                <span className="text-[10px] font-black text-teal-500 uppercase tracking-[0.2em] font-english mb-1">
+                  -{Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)}% OFF
                 </span>
-                <span className="text-xl text-gray-300 line-through font-english tabular-nums">
+                <span className="text-2xl text-gray-300 line-through font-english tabular-nums leading-none">
                   {formatCurrency(product.compareAtPrice)}
                 </span>
               </div>
