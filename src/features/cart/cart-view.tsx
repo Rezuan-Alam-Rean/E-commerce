@@ -130,7 +130,6 @@ export function CartView() {
                   alt={item.product.name}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  unoptimized
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-300">

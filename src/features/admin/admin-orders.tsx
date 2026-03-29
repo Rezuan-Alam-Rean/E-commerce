@@ -366,7 +366,7 @@ export function AdminOrders() {
                     <div key={item.product.id} className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-[0_2px_12px_rgb(0,0,0,0.02)]">
                       <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
                         {item.product.images?.[0] ? (
-                          <Image src={item.product.images[0]} alt={item.product.name} fill className="object-cover" unoptimized />
+                          <Image src={item.product.images[0]} alt={item.product.name} fill className="object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-gray-300">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M3 9h18M9 21V9" /></svg>

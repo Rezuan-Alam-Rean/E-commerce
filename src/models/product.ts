@@ -23,6 +23,8 @@ const productSchema = new Schema(
 
 productSchema.index({ name: "text", description: "text" });
 productSchema.index({ isFeatured: 1, isTrending: 1, isFlashSale: 1 });
+productSchema.index({ status: 1 });
+productSchema.index({ categories: 1 });
 
 export type ProductDocument = InferSchemaType<typeof productSchema>;
 

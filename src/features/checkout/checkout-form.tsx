@@ -411,7 +411,6 @@ export function CheckoutForm({ buyNowItem }: CheckoutFormProps) {
                         alt={item.name}
                         fill
                         className="object-cover"
-                        unoptimized
                       />
                     ) : null}
                     <div className="absolute top-0 right-0 bg-black text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-bl-xl font-english">

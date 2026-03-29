@@ -264,7 +264,7 @@ export function ProductCreateSection({ categories, categoriesLoading, onCreate }
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {images.map((image) => (
               <div key={image} className="relative group rounded-2xl overflow-hidden h-48 border border-gray-100 shadow-sm">
-                <Image src={image} alt="Product preview" fill className="object-cover" unoptimized />
+                <Image src={image} alt="Product preview" fill className="object-cover" />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
                 <button
                   type="button"

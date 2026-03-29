@@ -284,7 +284,7 @@ export function ProductEditModal({ productId, categories, onClose, fetchProductD
                   <div className="mt-4 grid gap-3 sm:grid-cols-3">
                     {images.map((image) => (
                       <div key={image} className="relative group rounded-2xl overflow-hidden h-40 border border-gray-100 shadow-sm">
-                        <Image src={image} alt="Product image" fill className="object-cover" unoptimized />
+                        <Image src={image} alt="Product image" fill className="object-cover" />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
                         <button
                           type="button"

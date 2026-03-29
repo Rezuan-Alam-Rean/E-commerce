@@ -17,7 +17,6 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
             alt={name}
             fill
             className="object-cover transition-transform duration-700 hover:scale-105"
-            unoptimized
           />
         ) : (
           <div className="flex h-full items-center justify-center text-[10px] font-black uppercase tracking-[0.3em] text-gray-300 font-english">
@@ -39,7 +38,7 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
                 }`}
               onClick={() => setActive(index)}
             >
-              <Image src={image} alt={`${name} view ${index + 1}`} fill className="object-cover" unoptimized />
+              <Image src={image} alt={`${name} view ${index + 1}`} fill className="object-cover" />
             </button>
           ))}
         </div>

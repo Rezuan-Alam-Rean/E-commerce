@@ -1,6 +1,6 @@
 import { ProductDetail } from "@/features/products/product-detail";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function ProductDetailPage({
   params,

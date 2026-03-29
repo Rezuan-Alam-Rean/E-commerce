@@ -276,7 +276,7 @@ export function OrdersView() {
                                   <div key={item.product.id} className="flex items-center gap-3">
                                     <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
                                       {item.product.images?.[0] ? (
-                                        <Image src={item.product.images[0]} alt={item.product.name} fill className="object-cover" unoptimized />
+                                        <Image src={item.product.images[0]} alt={item.product.name} fill className="object-cover" />
                                       ) : (
                                         <div className="w-full h-full flex items-center justify-center text-gray-300 text-lg">□</div>
                                       )}
@@ -349,7 +349,7 @@ export function OrdersView() {
                       {order.items.map((item) => (
                         <div key={item.product.id} className="flex items-center gap-3 bg-gray-50 rounded-2xl p-3">
                           <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-gray-100 bg-white">
-                            {item.product.images?.[0] && <Image src={item.product.images[0]} alt={item.product.name} fill className="object-cover" unoptimized />}
+                            {item.product.images?.[0] && <Image src={item.product.images[0]} alt={item.product.name} fill className="object-cover" />}
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-bold text-gray-900 truncate">{item.product.name}</p>

@@ -4,7 +4,7 @@ import { FeaturedProducts } from "@/features/home/featured-products";
 import { TrendingProducts } from "@/features/home/trending-products";
 import { FlashSale } from "@/features/home/flash-sale";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default function HomePage() {
   return (

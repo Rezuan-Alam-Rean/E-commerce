@@ -61,7 +61,6 @@ export function ProductCard({ product }: ProductCardProps) {
             alt={product.name}
             fill
             className="object-cover transition-transform duration-1000 group-hover:scale-110"
-            unoptimized
           />
         ) : (
           <div className="flex h-full items-center justify-center text-[10px] font-black uppercase tracking-widest text-gray-200 font-english">

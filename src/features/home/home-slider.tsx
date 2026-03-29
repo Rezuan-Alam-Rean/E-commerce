@@ -77,7 +77,7 @@ export function HomeSlider() {
                   fill
                   className={`object-cover object-center transition-transform duration-[6000ms] ease-linear ${index === active ? "scale-100" : "scale-110"
                     }`}
-                  unoptimized
+                  priority={index === 0}
                 />
               </div>
             )}
