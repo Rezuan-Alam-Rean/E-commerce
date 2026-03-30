@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useLoginMutation, useRegisterMutation } from "@/lib/store/api";
 import { trackMetaEvent } from "@/lib/analytics/meta-client";
+import { Eye, EyeOff } from "lucide-react";
 
 type AuthFormProps = {
   mode: "login" | "register";
@@ -18,6 +19,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [login, { isLoading: loginLoading }] = useLoginMutation();
   const [register, { isLoading: registerLoading }] = useRegisterMutation();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const loading = mode === "register" ? registerLoading : loginLoading;
 
   const resolveErrorMessage = (error: unknown) => {
@@ -133,14 +135,24 @@ export function AuthForm({ mode }: AuthFormProps) {
 
         <div className="space-y-2">
           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Secure Password</label>
-          <Input
-            type="password"
-            placeholder="••••••••"
-            value={form.password}
-            onChange={updateField("password")}
-            className="rounded-2xl border-gray-100 bg-gray-50/50 px-5 py-4 text-base font-medium transition-all focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500/50"
-            required
-          />
+          <div className="relative group/pass">
+            <Input
+              type={showPassword ? "text" : "password"}
+              placeholder="••••••••"
+              value={form.password}
+              onChange={updateField("password")}
+              className="rounded-2xl border-gray-100 bg-gray-50/50 px-5 py-4 text-base font-medium transition-all focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500/50 pr-12"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff size={18} strokeWidth={2.5} /> : <Eye size={18} strokeWidth={2.5} />}
+            </button>
+          </div>
         </div>
       </div>
 
